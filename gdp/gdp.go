@@ -35,6 +35,10 @@ func (p *Parser) getUntil(until string, first byte) string {
 	}
 
 	for {
+		if p.i >= p.len {
+			break
+		}
+
 		c := p.html[p.i]
 		p.i++
 		if c == until[0] && p.isEqual(until[1:]) {
@@ -53,6 +57,9 @@ func (p *Parser) parseAttr() []Attr {
 		isThereValue := false
 		var buffer bytes.Buffer
 		for {
+			if p.i >= p.len {
+				break
+			}
 			c1 := p.html[p.i]
 			p.i++
 			if c1 == ' ' || c1 == '>' || c1 == '=' {
@@ -81,6 +88,9 @@ func (p *Parser) parseAttr() []Attr {
 			}
 
 			for {
+				if p.i >= p.len {
+					break
+				}
 				c1 := p.html[p.i]
 				p.i++
 				if c1 == t {
@@ -230,12 +240,13 @@ func (p *Parser) isEndTag(tag *Tag) bool {
 }
 
 func (p *Parser) next1(tag *Tag) bool {
-	if p.i >= p.len {
-		return false
-	}
 
 	c := p.html[p.i]
 	p.i++
+
+	if p.i >= p.len {
+		return false
+	}
 
 	if c == '<' {
 		if p.isEqual("!--") {
@@ -313,6 +324,9 @@ func (p *Parser) Parse(parent *Tag) []Tag {
 	var eq int = 0
 	var stag *Tag = &Tag{}
 	for {
+		if p.i >= p.len {
+			break
+		}
 		var tag Tag
 
 		ret := p.getTag(&tag)
