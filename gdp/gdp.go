@@ -240,6 +240,9 @@ func (p *Parser) isEndTag(tag *Tag) bool {
 }
 
 func (p *Parser) next1(tag *Tag) bool {
+	if p.i >= p.len {
+		return false
+	}
 
 	c := p.html[p.i]
 	p.i++
