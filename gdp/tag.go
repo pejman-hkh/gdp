@@ -11,7 +11,7 @@ type Tag struct {
 	next     *Tag
 	prev     *Tag
 	parent   *Tag
-	children []Tag
+	children []*Tag
 }
 
 func (tag *Tag) Attr(key string) string {
@@ -35,9 +35,9 @@ func (tag *Tag) Next() *Tag {
 	return tag.next
 }
 
-func (mtag *Tag) findAttr(attrs map[string]string, tags []Tag) []Tag {
+func (mtag *Tag) findAttr(attrs map[string]string, tags []*Tag) []*Tag {
 
-	var ret []Tag
+	var ret []*Tag
 	for _, tag := range tags {
 		f := true
 		for attr, value := range attrs {
@@ -80,7 +80,7 @@ func (mtag *Tag) findAttr(attrs map[string]string, tags []Tag) []Tag {
 func (tag *Tag) Find(query string) *NodeList {
 	tags := tag.children
 	if query == "" {
-		return &NodeList{&tags}
+		return &NodeList{tags}
 	}
 
 	q := Query{query, 0, len(query)}
@@ -107,5 +107,5 @@ func (tag *Tag) Find(query string) *NodeList {
 		}
 	}
 
-	return &NodeList{&ret}
+	return &NodeList{ret}
 }

@@ -322,10 +322,10 @@ func (p *Parser) getTag(tag *Tag) bool {
 	return true
 }
 
-func (p *Parser) Parse(parent *Tag) []Tag {
-	var tags []Tag
+func (p *Parser) Parse(parent *Tag) []*Tag {
+	var tags []*Tag
 	var eq int = 0
-	var stag *Tag = &Tag{}
+	stag := &Tag{}
 	for {
 		if p.i >= p.len {
 			break
@@ -349,7 +349,7 @@ func (p *Parser) Parse(parent *Tag) []Tag {
 			tag.parent = parent
 			stag.next = &tag
 
-			tags = append(tags, tag)
+			tags = append(tags, &tag)
 			stag = &tag
 		}
 
