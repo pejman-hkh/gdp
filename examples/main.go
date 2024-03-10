@@ -26,5 +26,6 @@ func main() {
 	fmt.Println(middle.Parent().Attr("class"))
 	fmt.Println(middle.Prev().Attr("class"))
 	fmt.Println(middle.Next().Attr("class"))
+	fmt.Println(document.Html())
 
 }
