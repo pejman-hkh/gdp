@@ -1,6 +1,9 @@
 package gdp
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type Tag struct {
 	tag      string
@@ -12,6 +15,19 @@ type Tag struct {
 	prev     *Tag
 	parent   *Tag
 	children []*Tag
+}
+
+func (t *Tag) Print() {
+	for _, tag := range t.children {
+		fmt.Printf("{tag:%s, content:%s,", tag.tag, tag.content)
+		fmt.Printf("attr:%s,", makeAttr(tag.attrs))
+		if len(tag.children) > 0 {
+			fmt.Printf("children:")
+			tag.Print()
+			fmt.Printf(",")
+		}
+		fmt.Printf("}\n")
+	}
 }
 
 func (tag *Tag) makeHtml(content string) string {
@@ -35,11 +51,11 @@ func (tag *Tag) concatHtmls() string {
 		if child.tag == "empty" || child.tag == "cdata" {
 			html += child.content
 		} else {
-			ct := ""
+			content := ""
 			if len(child.children) > 0 {
-				ct = child.concatHtmls()
+				content = child.concatHtmls()
 			}
-			html += child.makeHtml(ct)
+			html += child.makeHtml(content)
 		}
 
 	}
@@ -52,7 +68,10 @@ func (tag *Tag) Html() string {
 
 func (tag *Tag) Attr(key string) string {
 	attr := getAttr(tag.attrs, key)
-	return attr.value
+	if attr != nil {
+		return attr.value
+	}
+	return ""
 }
 
 func (tag *Tag) GetElementById(id string) *Tag {
@@ -71,6 +90,10 @@ func (tag *Tag) Next() *Tag {
 	return tag.next
 }
 
+func (tag *Tag) Children() *NodeList {
+	return &NodeList{tag.children}
+}
+
 func (mtag *Tag) findAttr(attrs map[string]string, tags []*Tag) []*Tag {
 
 	var ret []*Tag
@@ -84,7 +107,8 @@ func (mtag *Tag) findAttr(attrs map[string]string, tags []*Tag) []*Tag {
 					f = false
 				}
 			} else {
-				var g string
+				g := ""
+
 				if attr == "tag" {
 					g = tag.tag
 				} else {
@@ -124,8 +148,9 @@ func (tag *Tag) Find(query string) *NodeList {
 	q := Query{query, 0, len(query)}
 	ret := tag.children
 	for {
-		var splited string
+		splited := ""
 		c := q.parseQuery(&splited)
+
 		if !c {
 			break
 		}
@@ -140,8 +165,8 @@ func (tag *Tag) Find(query string) *NodeList {
 		} else if strings.TrimSpace(splited) != "" {
 			qa := QueryAttr{splited, 0, len(splited)}
 			attrs := qa.parseAttr()
-			ret = tag.findAttr(attrs, ret)
 
+			ret = tag.findAttr(attrs, ret)
 		}
 	}
 
