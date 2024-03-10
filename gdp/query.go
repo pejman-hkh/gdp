@@ -47,18 +47,24 @@ func (q *Query) parseQuery(splited *string) bool {
 func (q *QueryAttr) getAttr() string {
 	a := ""
 	for {
-		if q.i == q.len {
-			break
-		}
 		c := q.query[q.i]
 		q.i++
+		if c == '\'' || c == '"' {
+			q.i++
+			break
+		}
 
 		if c == '#' || c == '.' || c == '[' || c == '=' || c == ']' {
 			break
 		}
+
 		a += string(c)
+
+		if q.i >= q.len {
+			break
+		}
 	}
-	q.i--
+
 	return a
 }
 
@@ -67,10 +73,8 @@ func (q *QueryAttr) parseAttr() map[string]string {
 
 	for {
 		c := q.query[q.i]
+
 		q.i++
-		if q.i == q.len {
-			break
-		}
 
 		if c == '.' {
 			ret["class"] = q.getAttr()
@@ -86,9 +90,19 @@ func (q *QueryAttr) parseAttr() map[string]string {
 
 			ret[key] = q.getAttr()
 		} else {
+
 			q.i--
 			ret["tag"] = q.getAttr()
+			if q.i >= q.len {
+				break
+			}
+			q.i--
 		}
+
+		if q.i >= q.len {
+			break
+		}
+
 	}
 
 	return ret
