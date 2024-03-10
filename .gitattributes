@@ -1,2 +1,3 @@
+/examples              export-ignore
 * linguist-vendored
 *.go linguist-vendored=false
