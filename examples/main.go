@@ -12,9 +12,11 @@ func main() {
 	fileContent, _ := os.ReadFile("fightclub.html")
 	document := gdp.Default(string(fileContent))
 	found := document.Find(".ipc-image")
-	fmt.Printf("%+v", found[0].Attr("src"))
+	fmt.Printf("%+v", found.Eq(0).Attr("src"))
 
 	document = gdp.Default(`<div class="test">test</div><div class="test1">test1</div>`)
-	found = document.Find(".test,.test1")
+	document.Find(".test,.test1").Each(func(index int, tag *gdp.Tag) {
+		fmt.Print(tag)
+	})
 	fmt.Printf("%+v", found)
 }

@@ -61,10 +61,10 @@ func (mtag *Tag) findAttr(attrs map[string]string, tags []Tag) []Tag {
 	return ret
 }
 
-func (tag *Tag) Find(query string) []Tag {
+func (tag *Tag) Find(query string) *NodeList {
 	tags := tag.children
 	if query == "" {
-		return tags
+		return &NodeList{&tags}
 	}
 
 	q := Query{query, 0, len(query)}
@@ -91,5 +91,5 @@ func (tag *Tag) Find(query string) []Tag {
 		}
 	}
 
-	return ret
+	return &NodeList{&ret}
 }
