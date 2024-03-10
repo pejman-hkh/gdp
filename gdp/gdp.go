@@ -4,7 +4,7 @@ import (
 	"bytes"
 )
 
-var hasNoEndTags = [17]string{"comment", "php", "empty", "!DOCTYPE", "area", "base", "col", "embed", "param", "source", "track", "meta", "link", "br", "input", "hr", "img"}
+var hasNoEndTags = [18]string{"comment", "php", "empty", "!DOCTYPE", "area", "base", "col", "embed", "param", "source", "track", "meta", "link", "br", "input", "hr", "img", "path"}
 
 func Default(html string) Tag {
 	var p Parser
@@ -50,19 +50,35 @@ func (p *Parser) getUntil(until string, first byte) string {
 	return buffer.String()
 }
 
+func (p *Parser) skipSpace() {
+	for {
+		if p.i >= p.len {
+			break
+		}
+		c1 := p.html[p.i]
+
+		if c1 == ' ' || c1 == '\n' || c1 == '\t' {
+			p.i++
+		} else {
+			break
+		}
+	}
+}
+
 func (p *Parser) parseAttr() []*Attr {
 	var attrs []*Attr
 
 	for {
 		isThereValue := false
 		var buffer bytes.Buffer
+		p.skipSpace()
 		for {
 			if p.i >= p.len {
 				break
 			}
 			c1 := p.html[p.i]
 			p.i++
-			if c1 == ' ' || c1 == '>' || c1 == '=' {
+			if c1 == '>' || c1 == '=' {
 				if c1 == '=' {
 					isThereValue = true
 				}
@@ -78,6 +94,7 @@ func (p *Parser) parseAttr() []*Attr {
 		}
 
 		name := buffer.String()
+
 		var buffer1 bytes.Buffer
 		if isThereValue {
 			g := p.html[p.i]
@@ -154,7 +171,7 @@ func (p *Parser) parseTag(tag *Tag) bool {
 			break
 		}
 
-		if c1 == ' ' {
+		if c1 == ' ' || c1 == '\n' || c1 == '\t' {
 			attrs = p.parseAttr()
 			break
 		}
@@ -231,7 +248,7 @@ func (p *Parser) isEqual(text string) bool {
 }
 
 func isEndTag(tag *Tag) bool {
-	for i := 0; i < 17; i++ {
+	for i := 0; i < 18; i++ {
 		if tag.tag == hasNoEndTags[i] {
 			return true
 		}
