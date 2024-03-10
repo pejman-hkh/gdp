@@ -50,8 +50,8 @@ func (p *Parser) getUntil(until string, first byte) string {
 	return buffer.String()
 }
 
-func (p *Parser) parseAttr() []Attr {
-	var attrs []Attr
+func (p *Parser) parseAttr() []*Attr {
+	var attrs []*Attr
 
 	for {
 		isThereValue := false
@@ -116,7 +116,7 @@ func (p *Parser) parseAttr() []Attr {
 			attr.name = name
 			attr.value = value
 
-			attrs = append(attrs, attr)
+			attrs = append(attrs, &attr)
 		}
 
 		c1 := p.html[p.i]
@@ -141,7 +141,7 @@ func (p *Parser) parseTag(tag *Tag) bool {
 	}
 
 	var buffer bytes.Buffer
-	var attrs []Attr
+	var attrs []*Attr
 	for {
 		if p.i == p.len {
 			break
@@ -230,7 +230,7 @@ func (p *Parser) isEqual(text string) bool {
 	return false
 }
 
-func (p *Parser) isEndTag(tag *Tag) bool {
+func isEndTag(tag *Tag) bool {
 	for i := 0; i < 17; i++ {
 		if tag.tag == hasNoEndTags[i] {
 			return true
@@ -297,7 +297,7 @@ func (p *Parser) getTag(tag *Tag) bool {
 		hasNoEndTags[11] = ""
 	}
 
-	if p.isEndTag(tag) || tag.isEnd {
+	if isEndTag(tag) || tag.isEnd {
 		return true
 	}
 
