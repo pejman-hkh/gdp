@@ -5,13 +5,49 @@ import "strings"
 type Tag struct {
 	tag      string
 	content  string
-	attrs    []Attr
+	attrs    []*Attr
 	isEnd    bool
 	eq       int
 	next     *Tag
 	prev     *Tag
 	parent   *Tag
 	children []*Tag
+}
+
+func (tag *Tag) makeHtml(content string) string {
+	if tag.tag == "script" {
+		return "<script" + makeAttr(tag.attrs) + ">" + tag.content + "</script>"
+	} else if tag.tag == "comment" {
+		return ""
+	}
+
+	if isEndTag(tag) {
+		return "<" + tag.tag + "" + makeAttr(tag.attrs) + " />"
+	}
+
+	return "<" + tag.tag + makeAttr(tag.attrs) + ">" + (content) + "</" + tag.tag + ">"
+}
+
+func (tag *Tag) concatHtmls() string {
+	children := tag.children
+	html := ""
+	for _, child := range children {
+		if child.tag == "empty" || child.tag == "cdata" {
+			html += child.content
+		} else {
+			ct := ""
+			if len(child.children) > 0 {
+				ct = child.concatHtmls()
+			}
+			html += child.makeHtml(ct)
+		}
+
+	}
+	return html
+}
+
+func (tag *Tag) Html() string {
+	return tag.concatHtmls()
 }
 
 func (tag *Tag) Attr(key string) string {
@@ -53,7 +89,9 @@ func (mtag *Tag) findAttr(attrs map[string]string, tags []*Tag) []*Tag {
 					g = tag.tag
 				} else {
 					a := getAttr(tag.attrs, attr)
-					g = a.value
+					if a != nil {
+						g = a.value
+					}
 				}
 
 				if g != value {
