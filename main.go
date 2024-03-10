@@ -11,5 +11,9 @@ func main() {
 
 	fileContent, _ := os.ReadFile("fightclub.html")
 	var document gdp.Tag = gdp.Default(string(fileContent))
-	fmt.Printf("%+v", document)
+
+	found := document.Find(".ipc-image")
+
+	fmt.Printf("%+v", found[0].Attr("src"))
+
 }
