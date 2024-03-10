@@ -330,7 +330,7 @@ func (p *Parser) Parse(parent *Tag) []Tag {
 		if p.i >= p.len {
 			break
 		}
-		var tag Tag
+		var tag Tag = Tag{}
 
 		ret := p.getTag(&tag)
 		if !ret {
@@ -350,9 +350,9 @@ func (p *Parser) Parse(parent *Tag) []Tag {
 			stag.next = &tag
 
 			tags = append(tags, tag)
+			stag = &tag
 		}
 
-		stag = &tag
 	}
 	return tags
 }

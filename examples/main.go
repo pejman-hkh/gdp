@@ -14,9 +14,17 @@ func main() {
 	found := document.Find(".ipc-image")
 	fmt.Printf("%+v", found.Eq(0).Attr("src"))
 
-	document = gdp.Default(`<div class="test">test</div><div class="test1">test1</div>`)
-	document.Find(".test,.test1").Each(func(index int, tag *gdp.Tag) {
-		fmt.Print(tag)
+	document = gdp.Default(`<div class="parent"><div class="prev">test</div><div class="middle" id="middle">test1</div><span class="next"></span></div>`)
+
+	fmt.Printf("%+v", document)
+
+	document.Find(".prev,.middle,.next").Each(func(index int, tag *gdp.Tag) {
+		fmt.Println(tag)
 	})
-	fmt.Printf("%+v", found)
+
+	middle := document.GetElementById("middle")
+	fmt.Println(middle.Parent().Attr("class"))
+	fmt.Println(middle.Prev().Attr("class"))
+	fmt.Println(middle.Next().Attr("class"))
+
 }

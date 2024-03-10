@@ -19,6 +19,22 @@ func (tag *Tag) Attr(key string) string {
 	return attr.value
 }
 
+func (tag *Tag) GetElementById(id string) *Tag {
+	return tag.Find("#" + id).Eq(0)
+}
+
+func (tag *Tag) Parent() *Tag {
+	return tag.parent
+}
+
+func (tag *Tag) Prev() *Tag {
+	return tag.prev
+}
+
+func (tag *Tag) Next() *Tag {
+	return tag.next
+}
+
 func (mtag *Tag) findAttr(attrs map[string]string, tags []Tag) []Tag {
 
 	var ret []Tag
