@@ -10,10 +10,11 @@ import (
 func main() {
 
 	fileContent, _ := os.ReadFile("fightclub.html")
-	var document gdp.Tag = gdp.Default(string(fileContent))
-
+	document := gdp.Default(string(fileContent))
 	found := document.Find(".ipc-image")
-
 	fmt.Printf("%+v", found[0].Attr("src"))
 
+	document = gdp.Default(`<div class="test">test</div><div class="test1">test1</div>`)
+	found = document.Find(".test,.test1")
+	fmt.Printf("%+v", found)
 }

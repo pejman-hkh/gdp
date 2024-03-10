@@ -1,5 +1,7 @@
 package gdp
 
+import "strings"
+
 type Tag struct {
 	tag      string
 	content  string
@@ -13,17 +15,18 @@ type Tag struct {
 }
 
 func (tag *Tag) Attr(key string) string {
-	attr := getAttrIndex(tag.attrs, key)
+	attr := getAttr(tag.attrs, key)
 	return attr.value
 }
 
-func (tag *Tag) findAttr(attrs map[string]string, tags []Tag) []Tag {
+func (mtag *Tag) findAttr(attrs map[string]string, tags []Tag) []Tag {
+
 	var ret []Tag
 	for _, tag := range tags {
 		f := true
 		for attr, value := range attrs {
 			if attr == "class" {
-				classAttr := getAttrIndex(tag.attrs, "class")
+				classAttr := getAttr(tag.attrs, "class")
 
 				if !classAttr.inClass(value) {
 					f = false
@@ -33,7 +36,7 @@ func (tag *Tag) findAttr(attrs map[string]string, tags []Tag) []Tag {
 				if attr == "tag" {
 					g = tag.tag
 				} else {
-					a := getAttrIndex(tag.attrs, attr)
+					a := getAttr(tag.attrs, attr)
 					g = a.value
 				}
 
@@ -65,7 +68,7 @@ func (tag *Tag) Find(query string) []Tag {
 	}
 
 	q := Query{query, 0, len(query)}
-	var ret []Tag
+	ret := tag.children
 	for {
 		var splited string
 		c := q.parseQuery(&splited)
@@ -74,14 +77,17 @@ func (tag *Tag) Find(query string) []Tag {
 		}
 
 		if splited == "," {
+			q.parseQuery(&splited)
+
 			qa := QueryAttr{splited, 0, len(splited)}
 			attrs := qa.parseAttr()
 			found := tag.findAttr(attrs, tags)
 			ret = append(ret, found...)
-		} else if splited != " " {
+		} else if strings.TrimSpace(splited) != "" {
 			qa := QueryAttr{splited, 0, len(splited)}
 			attrs := qa.parseAttr()
-			ret = tag.findAttr(attrs, tags)
+			ret = tag.findAttr(attrs, ret)
+
 		}
 	}
 

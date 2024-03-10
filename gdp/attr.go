@@ -7,7 +7,7 @@ type Attr struct {
 	value string
 }
 
-func getAttrIndex(attrs []Attr, index string) Attr {
+func getAttr(attrs []Attr, index string) Attr {
 	var ret Attr
 	for _, attr := range attrs {
 		if attr.name == index {
