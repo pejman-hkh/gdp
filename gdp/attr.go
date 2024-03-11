@@ -10,7 +10,7 @@ type Attr struct {
 }
 
 func makeAttr(attrs []*Attr) string {
-	ret := " "
+	ret := ""
 	pre := ""
 
 	for _, attr := range attrs {
@@ -24,6 +24,9 @@ func makeAttr(attrs []*Attr) string {
 		ret += pre + name + `="` + value + `"`
 		pre = " "
 
+	}
+	if ret != "" {
+		ret = " " + ret
 	}
 	return ret
 }
