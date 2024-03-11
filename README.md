@@ -1,4 +1,4 @@
-# gdp
+# GDP
 GoLang Dom Parser
 
 # Usage
