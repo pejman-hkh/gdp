@@ -1,10 +1,6 @@
 package gdp
 
-type Query struct {
-	query string
-	i     int
-	len   int
-}
+import "strings"
 
 type QueryAttr struct {
 	query string
@@ -12,36 +8,38 @@ type QueryAttr struct {
 	len   int
 }
 
-func (q *Query) parseQuery(splited *string) bool {
-	if q.i == q.len {
-		return false
-	}
-
-	c := q.query[q.i]
-
-	if c == ' ' || c == ',' || c == '>' {
-		q.i++
-		*splited = string(c)
-		return true
-	}
-
-	a := ""
-	for {
-		c := q.query[q.i]
-		q.i++
-
-		if c == ' ' || c == ',' || c == '>' {
-			q.i--
-			break
+func splitQueries(mainQuery string) []string {
+	var ret []string
+	query := ""
+	for _, char := range mainQuery {
+		if char == ',' {
+			ret = append(ret, strings.Trim(query, " "))
+			query = ""
+			continue
 		}
-		a += string(c)
-
-		if q.i == q.len {
-			break
-		}
+		query += string(char)
 	}
-	*splited = a
-	return true
+	ret = append(ret, strings.Trim(query, " "))
+	return ret
+}
+
+func splitQuery(query string) []string {
+	var ret []string
+	str := ""
+	for _, c := range query {
+
+		if c == ' ' || c == '>' {
+
+			ret = append(ret, strings.Trim(str, " "))
+			ret = append(ret, string(c))
+
+			str = ""
+			continue
+		}
+		str += string(c)
+	}
+	ret = append(ret, strings.Trim(str, " "))
+	return ret
 }
 
 func (q *QueryAttr) getAttr() string {
