@@ -22,6 +22,61 @@ func TestQuery(t *testing.T) {
 		t.Errorf("got %q, wanted %q", got, want)
 	}
 
+	p = splitQuery("img + p")
+	got = p[0]
+	want = "img"
+
+	if got != want {
+		t.Errorf("got %q, wanted %q", got, want)
+	}
+
+	p = splitQuery("img  p")
+	got = p[1]
+	want = " "
+
+	if got != want {
+		t.Errorf("got %q, wanted %q", got, want)
+	}
+
+	p = splitQuery("img > p")
+	got = p[1]
+	want = ">"
+
+	if got != want {
+		t.Errorf("got %q, wanted %q", got, want)
+	}
+
+	p = splitQuery("img > p")
+	got = p[1]
+	want = ">"
+
+	if got != want {
+		t.Errorf("got %q, wanted %q", got, want)
+	}
+
+	p = splitQuery("img ~ p")
+	got = p[1]
+	want = "~"
+
+	if got != want {
+		t.Errorf("got %q, wanted %q", got, want)
+	}
+
+	p = splitQuery("img|p")
+	got = p[1]
+	want = "|"
+
+	if got != want {
+		t.Errorf("got %q, wanted %q", got, want)
+	}
+
+	got = p[2]
+	want = "p"
+
+	if got != want {
+		t.Errorf("got %q, wanted %q", got, want)
+	}
+
 }
 
 func TestSplitQueries(t *testing.T) {
@@ -59,6 +114,16 @@ func TestAttr(t *testing.T) {
 
 	got = attrs["class"]
 	want = "aa"
+
+	if got != want {
+		t.Errorf("got %q, wanted %q", got, want)
+	}
+
+	q = "a[href='test'][class='aa']:eq(0)"
+	qa = QueryAttr{q, 0, len(q)}
+	attrs = qa.parseAttr()
+	got = attrs["eq"]
+	want = "0"
 
 	if got != want {
 		t.Errorf("got %q, wanted %q", got, want)

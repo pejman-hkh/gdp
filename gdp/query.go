@@ -1,6 +1,8 @@
 package gdp
 
-import "strings"
+import (
+	"strings"
+)
 
 type QueryAttr struct {
 	query string
@@ -23,15 +25,48 @@ func splitQueries(mainQuery string) []string {
 	return ret
 }
 
+func skipSpace(query *string, i *int, len int) {
+	for *i < len {
+		c1 := (*query)[*i]
+		if c1 == ' ' {
+			*i++
+		} else {
+			break
+		}
+	}
+}
+
 func splitQuery(query string) []string {
 	var ret []string
 	str := ""
-	for _, c := range query {
+	len := len(query)
+	i := 0
+	for i < len {
+		c := query[i]
+		i++
 
-		if c == ' ' || c == '>' {
-
+		if c == '>' || c == '+' || c == '~' || c == '|' {
 			ret = append(ret, strings.Trim(str, " "))
 			ret = append(ret, string(c))
+
+			skipSpace(&query, &i, len)
+			str = ""
+			continue
+		}
+
+		if c == ' ' {
+			skipSpace(&query, &i, len)
+			c = query[i]
+
+			ret = append(ret, strings.Trim(str, " "))
+			if c == '>' || c == '+' || c == '~' || c == '|' {
+				ret = append(ret, string(c))
+				i++
+			} else {
+				ret = append(ret, " ")
+			}
+
+			skipSpace(&query, &i, len)
 
 			str = ""
 			continue
