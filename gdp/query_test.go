@@ -39,7 +39,7 @@ func TestSplitQueries(t *testing.T) {
 	}
 }
 
-func TestAtt(t *testing.T) {
+func TestAttr(t *testing.T) {
 	q := "a[href='test'][class='aa']"
 	qa := QueryAttr{q, 0, len(q)}
 	attrs := qa.parseAttr()
