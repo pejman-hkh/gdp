@@ -117,11 +117,7 @@ func (p *Parser) parseAttr() []*Attr {
 		}
 
 		if len(name) > 0 && name[0] != '/' && name[0] != ' ' {
-			var attr Attr
-			attr.name = name
-			attr.value = value
-
-			attrs = append(attrs, &attr)
+			attrs = append(attrs, &Attr{name, value})
 		}
 
 		c1 := p.html[p.i]
@@ -325,7 +321,7 @@ func (p *Parser) getTag(tag *Tag) bool {
 
 func (p *Parser) Parse(parent *Tag) []*Tag {
 	var tags []*Tag
-	var eq int = 0
+	eq := 0
 	stag := &Tag{}
 	for p.i < p.len {
 
