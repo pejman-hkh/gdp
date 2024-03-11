@@ -44,7 +44,7 @@ func splitQuery(query string) []string {
 
 func (q *QueryAttr) getAttr() string {
 	a := ""
-	for {
+	for q.i < q.len {
 		c := q.query[q.i]
 		q.i++
 		if c == '\'' || c == '"' {
@@ -52,24 +52,38 @@ func (q *QueryAttr) getAttr() string {
 			break
 		}
 
-		if c == '#' || c == '.' || c == '[' || c == '=' || c == ']' {
+		if c == '#' || c == '.' || c == '[' || c == '=' || c == ']' || c == ':' || c == '(' {
 			break
 		}
 
 		a += string(c)
-
-		if q.i >= q.len {
-			break
-		}
 	}
 
 	return a
 }
 
+func (q *QueryAttr) getParenthesis() string {
+	ret := ""
+	for q.i < q.len {
+		c := q.query[q.i]
+		q.i++
+		if c == '(' {
+			continue
+		}
+
+		if c == ')' {
+			break
+		}
+
+		ret += string(c)
+	}
+	return ret
+}
+
 func (q *QueryAttr) parseAttr() map[string]string {
 	ret := make(map[string]string)
 
-	for {
+	for q.i < q.len {
 		c := q.query[q.i]
 
 		q.i++
@@ -81,6 +95,9 @@ func (q *QueryAttr) parseAttr() map[string]string {
 
 		} else if c == ']' {
 			q.i++
+		} else if c == ':' {
+			key := q.getAttr()
+			ret[key] = q.getParenthesis()
 		} else if c == '[' {
 
 			key := q.getAttr()
@@ -95,10 +112,6 @@ func (q *QueryAttr) parseAttr() map[string]string {
 				break
 			}
 			q.i--
-		}
-
-		if q.i >= q.len {
-			break
 		}
 
 	}
