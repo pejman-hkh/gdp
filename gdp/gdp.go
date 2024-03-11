@@ -1,5 +1,9 @@
 package gdp
 
+import (
+	"bytes"
+)
+
 var hasNoEndTags = [18]string{"comment", "php", "empty", "!DOCTYPE", "area", "base", "col", "embed", "param", "source", "track", "meta", "link", "br", "input", "hr", "img", "path"}
 
 func Default(html string) Tag {
@@ -25,15 +29,12 @@ type Parser struct {
 }
 
 func (p *Parser) getUntil(until string, first byte) string {
-	buffer := ""
+	var buffer bytes.Buffer
 	if first != 0 {
-		buffer += string(first)
+		buffer.WriteByte(first)
 	}
 
-	for {
-		if p.i >= p.len {
-			break
-		}
+	for p.i < p.len {
 
 		c := p.html[p.i]
 		p.i++
@@ -41,16 +42,14 @@ func (p *Parser) getUntil(until string, first byte) string {
 			break
 		}
 
-		buffer += string(c)
+		buffer.WriteByte(c)
 	}
-	return buffer
+	return buffer.String()
 }
 
 func (p *Parser) skipSpace() {
-	for {
-		if p.i >= p.len {
-			break
-		}
+	for p.i < p.len {
+
 		c1 := p.html[p.i]
 
 		if c1 == ' ' || c1 == '\n' || c1 == '\t' {
@@ -68,10 +67,8 @@ func (p *Parser) parseAttr() []*Attr {
 		isThereValue := false
 		name := ""
 		p.skipSpace()
-		for {
-			if p.i >= p.len {
-				break
-			}
+		for p.i < p.len {
+
 			c1 := p.html[p.i]
 			p.i++
 			if c1 == '>' || c1 == '=' {
@@ -98,10 +95,8 @@ func (p *Parser) parseAttr() []*Attr {
 				p.i++
 			}
 
-			for {
-				if p.i >= p.len {
-					break
-				}
+			for p.i < p.len {
+
 				c1 := p.html[p.i]
 				p.i++
 				if c1 == t {
@@ -152,10 +147,7 @@ func (p *Parser) parseTag(tag *Tag) bool {
 
 	name := ""
 	var attrs []*Attr
-	for {
-		if p.i == p.len {
-			break
-		}
+	for p.i < p.len {
 
 		c1 := p.html[p.i]
 		p.i++
@@ -169,6 +161,7 @@ func (p *Parser) parseTag(tag *Tag) bool {
 			break
 		}
 		name += string(c1)
+
 	}
 
 	tag.tag = name
@@ -334,10 +327,8 @@ func (p *Parser) Parse(parent *Tag) []*Tag {
 	var tags []*Tag
 	var eq int = 0
 	stag := &Tag{}
-	for {
-		if p.i >= p.len {
-			break
-		}
+	for p.i < p.len {
+
 		var tag Tag = Tag{}
 
 		ret := p.getTag(&tag)
