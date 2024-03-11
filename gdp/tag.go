@@ -2,7 +2,6 @@ package gdp
 
 import (
 	"fmt"
-	"strings"
 )
 
 type Tag struct {
@@ -139,35 +138,31 @@ func (mtag *Tag) findAttr(attrs map[string]string, tags []*Tag) []*Tag {
 	return ret
 }
 
-func (tag *Tag) Find(query string) *NodeList {
+func (tag *Tag) Find(mainQuery string) *NodeList {
 	tags := tag.children
-	if query == "" {
+	if mainQuery == "" {
 		return &NodeList{tags}
 	}
 
-	q := Query{query, 0, len(query)}
-	ret := tag.children
-	for {
-		splited := ""
-		c := q.parseQuery(&splited)
+	var ret []*Tag
+	splits := splitQueries(mainQuery)
 
-		if !c {
-			break
+	for _, split := range splits {
+
+		found := tag.children
+		query := splitQuery(split)
+
+		for _, q := range query {
+			if q == " " {
+				continue
+			}
+
+			qa := QueryAttr{q, 0, len(q)}
+			attrs := qa.parseAttr()
+			found = tag.findAttr(attrs, found)
 		}
 
-		if splited == "," {
-			q.parseQuery(&splited)
-
-			qa := QueryAttr{splited, 0, len(splited)}
-			attrs := qa.parseAttr()
-			found := tag.findAttr(attrs, tags)
-			ret = append(ret, found...)
-		} else if strings.TrimSpace(splited) != "" {
-			qa := QueryAttr{splited, 0, len(splited)}
-			attrs := qa.parseAttr()
-
-			ret = tag.findAttr(attrs, ret)
-		}
+		ret = append(ret, found...)
 	}
 
 	return &NodeList{ret}
