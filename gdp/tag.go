@@ -200,12 +200,14 @@ func (tag *Tag) Find(mainQuery string) *NodeList {
 				}
 			} else if val, ok := attrs["eq"]; ok {
 				if len(found) > 0 {
-
-					tmp := []*Tag{}
 					i, _ := strconv.Atoi(val)
-
-					tmp = append(tmp, found[i])
-					found = tmp
+					if i < len(found) {
+						tmp := []*Tag{}
+						tmp = append(tmp, found[i])
+						found = tmp
+					} else {
+						found = []*Tag{}
+					}
 
 				}
 			}
