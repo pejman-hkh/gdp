@@ -36,7 +36,12 @@ func main() {
 
 	document = gdp.Default(`<div class="parent"><div class="prev">test</div><div class="middle" id="middle">test1</div><span class="next"></span></div>`)
 	tag := document.Find(".parent").Eq(0)
-
+	if tag.HasClass("parent") {
+		fmt.Println("Parent has class parent")
+	}
 	tag.SetHtml("<span>changed html</span>")
+	tag.Find("span").Eq(0).AddClass("test")
+	fmt.Print(tag.Html())
+	tag.Find("span").Eq(0).RemoveClass("test")
 	fmt.Print(tag.Html())
 }
