@@ -23,6 +23,7 @@ func main() {
 	})
 
 	middle := document.GetElementById("middle")
+	middle.Parent().SetAttr("class", "parent1")
 	fmt.Println(middle.Parent().Attr("class"))
 	fmt.Println(middle.Prev().Attr("class"))
 	fmt.Println(middle.Next().Attr("class"))
