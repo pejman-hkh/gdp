@@ -47,6 +47,9 @@ func (tag *Tag) concatHtmls() string {
 	children := tag.children
 	html := ""
 	for _, child := range children {
+		if child == nil {
+			continue
+		}
 		if child.tag == "empty" || child.tag == "cdata" {
 			html += child.content
 		} else {
@@ -93,10 +96,19 @@ func (tag *Tag) Children() *NodeList {
 	return &NodeList{tag.children}
 }
 
+func (tag *Tag) Remove() {
+
+	tag.parent.children[tag.eq] = nil
+
+}
+
 func (mtag *Tag) findAttr(attrs map[string]string, tags []*Tag) []*Tag {
 
 	var ret []*Tag
 	for _, tag := range tags {
+		if tag == nil {
+			continue
+		}
 		f := true
 		for attr, value := range attrs {
 			if attr == "class" {
