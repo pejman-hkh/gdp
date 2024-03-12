@@ -220,12 +220,7 @@ func (p *Parser) isEqual(text string) bool {
 	}
 
 	html := p.html[p.i : p.i+textLen]
-
-	if html == text {
-		return true
-	}
-
-	return false
+	return html == text
 }
 
 func isEndTag(tag *Tag) bool {

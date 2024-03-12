@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-type QueryAttr struct {
+type queryAttr struct {
 	query string
 	i     int
 	len   int
@@ -78,7 +78,7 @@ func splitQuery(query string) []string {
 	return ret
 }
 
-func (q *QueryAttr) getAttr() string {
+func (q *queryAttr) getAttr() string {
 	var buffer bytes.Buffer
 	for q.i < q.len {
 		c := q.query[q.i]
@@ -97,7 +97,7 @@ func (q *QueryAttr) getAttr() string {
 	return strings.Trim(buffer.String(), " ")
 }
 
-func (q *QueryAttr) getParenthesis() string {
+func (q *queryAttr) getParenthesis() string {
 	var buffer bytes.Buffer
 	for q.i < q.len {
 		c := q.query[q.i]
@@ -115,7 +115,7 @@ func (q *QueryAttr) getParenthesis() string {
 	return strings.Trim(buffer.String(), " ")
 }
 
-func (q *QueryAttr) parseAttr() map[string]string {
+func (q *queryAttr) parseAttr() map[string]string {
 	ret := make(map[string]string)
 
 	for q.i < q.len {

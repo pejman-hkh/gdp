@@ -9,7 +9,6 @@ GoLang Dom Parser
 - func (n *NodeList) Eq(index int) *Tag
 ### type Parser
 - func (p *Parser) Parse(parent *Tag) []*Tag
-### type QueryAttr
 ### type Tag
 - func Default(html string) Tag
 - func (tag *Tag) Attr(key string) string

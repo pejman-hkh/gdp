@@ -181,7 +181,7 @@ func (tag *Tag) Find(mainQuery string) *NodeList {
 				continue
 			}
 
-			qa := QueryAttr{q, 0, len(q)}
+			qa := queryAttr{q, 0, len(q)}
 			attrs := qa.parseAttr()
 			found = tag.findAttr(attrs, found)
 			if _, ok := attrs["first"]; ok {
