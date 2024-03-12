@@ -97,9 +97,15 @@ func (tag *Tag) Children() *NodeList {
 }
 
 func (tag *Tag) Remove() {
-
 	tag.parent.children[tag.eq] = nil
+}
 
+func (tag *Tag) SetHtml(html string) {
+	document := Default(html)
+	tag.children = document.children
+	for _, child := range document.children {
+		child.parent = tag
+	}
 }
 
 func (mtag *Tag) findAttr(attrs map[string]string, tags []*Tag) []*Tag {
