@@ -11,6 +11,9 @@ type Attr struct {
 func (a *Attr) makeAttr() string {
 	ret := ""
 	pre := ""
+	if a.attrs == nil {
+		return ""
+	}
 
 	for name, value := range *a.attrs {
 
