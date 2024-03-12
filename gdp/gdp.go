@@ -65,7 +65,7 @@ func (p *Parser) parseAttr() Attr {
 	attrs := make(map[string]*string)
 	for {
 		isThereValue := false
-		name := ""
+		var buffer bytes.Buffer
 		p.skipSpace()
 		for p.i < p.len {
 
@@ -82,11 +82,11 @@ func (p *Parser) parseAttr() Attr {
 
 				break
 			}
-
-			name += string(c1)
+			buffer.WriteByte(c1)
 		}
+		name := buffer.String()
 
-		value := ""
+		var buffer1 bytes.Buffer
 		if isThereValue {
 			g := p.html[p.i]
 			var t byte = 0
@@ -111,10 +111,10 @@ func (p *Parser) parseAttr() Attr {
 					p.i--
 					break
 				}
-
-				value += string(c1)
+				buffer1.WriteByte(c1)
 			}
 		}
+		value := buffer1.String()
 
 		if len(name) > 0 && name[0] != '/' && name[0] != ' ' {
 			attrs[name] = &value
@@ -141,7 +141,7 @@ func (p *Parser) parseTag(tag *Tag) bool {
 		p.i++
 	}
 
-	name := ""
+	var buffer bytes.Buffer
 	attrs := Attr{nil}
 	for p.i < p.len {
 
@@ -156,9 +156,10 @@ func (p *Parser) parseTag(tag *Tag) bool {
 			attrs = p.parseAttr()
 			break
 		}
-		name += string(c1)
+		buffer.WriteByte(c1)
 
 	}
+	name := buffer.String()
 
 	tag.tag = name
 	tag.attrs = attrs
