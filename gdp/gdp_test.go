@@ -4,6 +4,13 @@ import (
 	"testing"
 )
 
+func BenchmarkParser(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		html := `<div class="test">this is for benchmark</div>`
+		Default(html)
+	}
+}
+
 func TestTagWithoutClosing(t *testing.T) {
 	html := `<div class="test">this is for test`
 	document := Default(html)
