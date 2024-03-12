@@ -323,8 +323,7 @@ func (p *Parser) Parse(parent *Tag) []*Tag {
 
 		var tag Tag = Tag{}
 
-		ret := p.getTag(&tag)
-		if !ret {
+		if !p.getTag(&tag) {
 			break
 		}
 
