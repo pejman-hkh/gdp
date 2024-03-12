@@ -77,6 +77,18 @@ func (tag *Tag) SetAttr(key string, value string) {
 	tag.attrs.setValue(key, value)
 }
 
+func (tag *Tag) RemoveClass(class string) {
+	tag.attrs.RemoveClass(class)
+}
+
+func (tag *Tag) AddClass(class string) {
+	tag.attrs.AddClass(class)
+}
+
+func (tag *Tag) HasClass(class string) bool {
+	return tag.attrs.HasClass(class)
+}
+
 func (tag *Tag) GetElementById(id string) *Tag {
 	return tag.Find("#" + id).Eq(0)
 }
@@ -124,7 +136,7 @@ func (mtag *Tag) findAttr(attrs map[string]string, tags []*Tag) []*Tag {
 
 			if attr == "class" {
 
-				if !tag.attrs.inClass(value) {
+				if !tag.attrs.HasClass(value) {
 					f = false
 				}
 			} else {

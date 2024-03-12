@@ -47,7 +47,38 @@ func (a *Attr) valueOf(key string) string {
 	return ""
 }
 
-func (a *Attr) inClass(v string) bool {
+func (a *Attr) RemoveClass(class string) {
+	if a.attrs == nil {
+		return
+	}
+
+	split := strings.Split(a.valueOf("class"), " ")
+	cls := ""
+	pre := ""
+	for _, s := range split {
+		if s != class {
+			cls += pre + s
+			pre = " "
+		}
+	}
+	a.setValue("class", cls)
+}
+
+func (a *Attr) AddClass(class string) {
+	if a.attrs == nil {
+		return
+	}
+
+	if !a.HasClass(class) {
+		classes := a.valueOf("class")
+		if classes != "" {
+			classes += " "
+		}
+		a.setValue("class", classes+class)
+	}
+}
+
+func (a *Attr) HasClass(v string) bool {
 
 	if a.attrs == nil {
 		return false
