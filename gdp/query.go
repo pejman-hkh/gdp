@@ -94,7 +94,7 @@ func (q *QueryAttr) getAttr() string {
 		a += string(c)
 	}
 
-	return a
+	return strings.Trim(a, " ")
 }
 
 func (q *QueryAttr) getParenthesis() string {
@@ -112,7 +112,7 @@ func (q *QueryAttr) getParenthesis() string {
 
 		ret += string(c)
 	}
-	return ret
+	return strings.Trim(ret, " ")
 }
 
 func (q *QueryAttr) parseAttr() map[string]string {
