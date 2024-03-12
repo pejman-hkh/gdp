@@ -29,4 +29,8 @@ func main() {
 	fmt.Println(middle.Next().Attr("class"))
 	fmt.Println(document.Html())
 
+	document = gdp.Default(`<div id="test">test</div><div id="test1">test1</div>`)
+	document.Find("#test").Eq(0).Remove()
+	fmt.Print(document.Html())
+	fmt.Print(document.Find("#test").Eq(0))
 }
