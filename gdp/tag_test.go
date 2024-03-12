@@ -46,3 +46,51 @@ func TestHtml(t *testing.T) {
 		t.Errorf("got %q, wanted %q", got, want)
 	}
 }
+
+func TestFindFirst(t *testing.T) {
+	document := Default(`<span>first</span><span>second</span><span>third</span>`)
+	first := document.Find("span:first")
+
+	got1 := len(first.list)
+	want1 := 1
+	if got1 != want1 {
+		t.Errorf("got %q, wanted %q", got1, want1)
+	}
+
+	got := first.Eq(0).Html()
+	want := "first"
+	if got != want {
+		t.Errorf("got %q, wanted %q", got, want)
+	}
+
+}
+
+func TestFindLast(t *testing.T) {
+	document := Default(`<span>first</span><span>second</span><span>third</span>`)
+	last := document.Find("span:last")
+
+	got1 := len(last.list)
+	want1 := 1
+	if got1 != want1 {
+		t.Errorf("got %q, wanted %q", got1, want1)
+	}
+
+	got := last.Eq(0).Html()
+	want := "third"
+	if got != want {
+		t.Errorf("got %q, wanted %q", got, want)
+	}
+
+}
+
+func TestEq(t *testing.T) {
+	document := Default(`<span>first</span><span>second</span><span>third</span>`)
+	eq := document.Find("span:eq(1)")
+
+	got := eq.Eq(0).Html()
+	want := "second"
+	if got != want {
+		t.Errorf("got %q, wanted %q", got, want)
+	}
+
+}

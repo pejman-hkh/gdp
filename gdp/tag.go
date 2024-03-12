@@ -2,6 +2,7 @@ package gdp
 
 import (
 	"fmt"
+	"strconv"
 )
 
 type Tag struct {
@@ -117,6 +118,10 @@ func (mtag *Tag) findAttr(attrs map[string]string, tags []*Tag) []*Tag {
 		}
 		f := true
 		for attr, value := range attrs {
+			if attr == "eq" {
+				continue
+			}
+
 			if attr == "class" {
 
 				if !tag.attrs.inClass(value) {
@@ -151,7 +156,6 @@ func (mtag *Tag) findAttr(attrs map[string]string, tags []*Tag) []*Tag {
 		if len(tag.children) > 0 {
 			found := tag.findAttr(attrs, tag.children)
 			ret = append(ret, found...)
-
 		}
 	}
 
@@ -180,6 +184,32 @@ func (tag *Tag) Find(mainQuery string) *NodeList {
 			qa := QueryAttr{q, 0, len(q)}
 			attrs := qa.parseAttr()
 			found = tag.findAttr(attrs, found)
+			if _, ok := attrs["first"]; ok {
+				if len(found) > 0 {
+					tmp := []*Tag{}
+					tmp = append(tmp, found[0])
+					found = tmp
+
+				}
+			} else if _, ok := attrs["last"]; ok {
+				if len(found) > 0 {
+					tmp := []*Tag{}
+					tmp = append(tmp, found[len(found)-1])
+					found = tmp
+
+				}
+			} else if val, ok := attrs["eq"]; ok {
+				if len(found) > 0 {
+
+					tmp := []*Tag{}
+					i, _ := strconv.Atoi(val)
+
+					tmp = append(tmp, found[i])
+					found = tmp
+
+				}
+			}
+
 		}
 
 		ret = append(ret, found...)
