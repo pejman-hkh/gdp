@@ -1,6 +1,7 @@
 package gdp
 
 import (
+	"bytes"
 	"strings"
 )
 
@@ -12,16 +13,16 @@ type QueryAttr struct {
 
 func splitQueries(mainQuery string) []string {
 	var ret []string
-	query := ""
+	var buffer bytes.Buffer
 	for _, char := range mainQuery {
 		if char == ',' {
-			ret = append(ret, strings.Trim(query, " "))
-			query = ""
+			ret = append(ret, strings.Trim(buffer.String(), " "))
+			buffer = bytes.Buffer{}
 			continue
 		}
-		query += string(char)
+		buffer.WriteRune(char)
 	}
-	ret = append(ret, strings.Trim(query, " "))
+	ret = append(ret, strings.Trim(buffer.String(), " "))
 	return ret
 }
 
@@ -38,7 +39,7 @@ func skipSpace(query *string, i *int, len int) {
 
 func splitQuery(query string) []string {
 	var ret []string
-	str := ""
+	var buffer bytes.Buffer
 	len := len(query)
 	i := 0
 	for i < len {
@@ -46,11 +47,11 @@ func splitQuery(query string) []string {
 		i++
 
 		if c == '>' || c == '+' || c == '~' || c == '|' {
-			ret = append(ret, strings.Trim(str, " "))
+			ret = append(ret, strings.Trim(buffer.String(), " "))
 			ret = append(ret, string(c))
 
 			skipSpace(&query, &i, len)
-			str = ""
+			buffer = bytes.Buffer{}
 			continue
 		}
 
@@ -58,7 +59,7 @@ func splitQuery(query string) []string {
 			skipSpace(&query, &i, len)
 			c = query[i]
 
-			ret = append(ret, strings.Trim(str, " "))
+			ret = append(ret, strings.Trim(buffer.String(), " "))
 			if c == '>' || c == '+' || c == '~' || c == '|' {
 				ret = append(ret, string(c))
 				i++
@@ -68,17 +69,17 @@ func splitQuery(query string) []string {
 
 			skipSpace(&query, &i, len)
 
-			str = ""
+			buffer = bytes.Buffer{}
 			continue
 		}
-		str += string(c)
+		buffer.WriteByte(c)
 	}
-	ret = append(ret, strings.Trim(str, " "))
+	ret = append(ret, strings.Trim(buffer.String(), " "))
 	return ret
 }
 
 func (q *QueryAttr) getAttr() string {
-	a := ""
+	var buffer bytes.Buffer
 	for q.i < q.len {
 		c := q.query[q.i]
 		q.i++
@@ -90,15 +91,14 @@ func (q *QueryAttr) getAttr() string {
 		if c == '#' || c == '.' || c == '[' || c == '=' || c == ']' || c == ':' || c == '(' {
 			break
 		}
-
-		a += string(c)
+		buffer.WriteByte(c)
 	}
 
-	return strings.Trim(a, " ")
+	return strings.Trim(buffer.String(), " ")
 }
 
 func (q *QueryAttr) getParenthesis() string {
-	ret := ""
+	var buffer bytes.Buffer
 	for q.i < q.len {
 		c := q.query[q.i]
 		q.i++
@@ -110,9 +110,9 @@ func (q *QueryAttr) getParenthesis() string {
 			break
 		}
 
-		ret += string(c)
+		buffer.WriteByte(c)
 	}
-	return strings.Trim(ret, " ")
+	return strings.Trim(buffer.String(), " ")
 }
 
 func (q *QueryAttr) parseAttr() map[string]string {
