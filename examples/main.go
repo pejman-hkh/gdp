@@ -33,4 +33,10 @@ func main() {
 	document.Find("#test").Eq(0).Remove()
 	fmt.Print(document.Html())
 	fmt.Print(document.Find("#test").Eq(0))
+
+	document = gdp.Default(`<div class="parent"><div class="prev">test</div><div class="middle" id="middle">test1</div><span class="next"></span></div>`)
+	tag := document.Find(".parent").Eq(0)
+
+	tag.SetHtml("<span>changed html</span>")
+	fmt.Print(tag.Html())
 }
