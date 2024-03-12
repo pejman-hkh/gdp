@@ -96,7 +96,7 @@ func TestSplitQueries(t *testing.T) {
 
 func TestAttr(t *testing.T) {
 	q := "a[href='test'][class='aa']"
-	qa := QueryAttr{q, 0, len(q)}
+	qa := queryAttr{q, 0, len(q)}
 	attrs := qa.parseAttr()
 
 	got := attrs["tag"]
@@ -120,7 +120,7 @@ func TestAttr(t *testing.T) {
 	}
 
 	q = "a[href='test'][class='aa']:eq(0)"
-	qa = QueryAttr{q, 0, len(q)}
+	qa = queryAttr{q, 0, len(q)}
 	attrs = qa.parseAttr()
 	got = attrs["eq"]
 	want = "0"
