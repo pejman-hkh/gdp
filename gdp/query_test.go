@@ -46,7 +46,7 @@ func TestQuery(t *testing.T) {
 		t.Errorf("got %q, wanted %q", got, want)
 	}
 
-	p = splitQuery("img > p")
+	p = splitQuery("img>p")
 	got = p[1]
 	want = ">"
 
