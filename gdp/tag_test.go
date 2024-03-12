@@ -84,11 +84,27 @@ func TestFindLast(t *testing.T) {
 }
 
 func TestEq(t *testing.T) {
-	document := Default(`<span>first</span><span>second</span><span>third</span>`)
-	eq := document.Find("span:eq(1)")
+	document := Default(`<div><span>first</span></div><div><span>second</span></div><div><span>third</span></div>`)
+	eq := document.Find("div:eq(1)")
 
 	got := eq.Eq(0).Html()
-	want := "second"
+	want := "<span>second</span>"
+	if got != want {
+		t.Errorf("got %q, wanted %q", got, want)
+	}
+
+	eq = document.Find("div:eq(1) span")
+
+	got = eq.Eq(0).Html()
+	want = "second"
+	if got != want {
+		t.Errorf("got %q, wanted %q", got, want)
+	}
+
+	eq = document.Find("div:eq(5) span")
+
+	got = eq.Eq(0).Html()
+	want = ""
 	if got != want {
 		t.Errorf("got %q, wanted %q", got, want)
 	}
