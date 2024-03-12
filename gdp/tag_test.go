@@ -35,3 +35,14 @@ func TestSib(t *testing.T) {
 		t.Errorf("got %q, wanted %q", got, want)
 	}
 }
+
+func TestHtml(t *testing.T) {
+	document := Default(`<div class="parent"><div class="prev">test</div><div class="middle" id="middle">test1</div><span class="next"></span></div>`)
+	tag := document.Find(".parent").Eq(0)
+	tag.SetHtml("<span>changed html</span>")
+	got := tag.Html()
+	want := `<span>changed html</span>`
+	if got != want {
+		t.Errorf("got %q, wanted %q", got, want)
+	}
+}
