@@ -14,7 +14,7 @@ func Default(html string) Tag {
 	var document Tag
 	document.tag = "document"
 	document.children = p.Parse(&document)
-
+	document.attrs = Attr{nil}
 	p.current = &document
 
 	return document
@@ -60,9 +60,9 @@ func (p *Parser) skipSpace() {
 	}
 }
 
-func (p *Parser) parseAttr() []*Attr {
-	var attrs []*Attr
+func (p *Parser) parseAttr() Attr {
 
+	attrs := make(map[string]*string)
 	for {
 		isThereValue := false
 		name := ""
@@ -117,7 +117,7 @@ func (p *Parser) parseAttr() []*Attr {
 		}
 
 		if len(name) > 0 && name[0] != '/' && name[0] != ' ' {
-			attrs = append(attrs, &Attr{name, value})
+			attrs[name] = &value
 		}
 
 		c1 := p.html[p.i]
@@ -127,7 +127,7 @@ func (p *Parser) parseAttr() []*Attr {
 		}
 	}
 
-	return attrs
+	return Attr{&attrs}
 }
 
 func (p *Parser) parseTag(tag *Tag) bool {
@@ -142,7 +142,7 @@ func (p *Parser) parseTag(tag *Tag) bool {
 	}
 
 	name := ""
-	var attrs []*Attr
+	attrs := Attr{nil}
 	for p.i < p.len {
 
 		c1 := p.html[p.i]

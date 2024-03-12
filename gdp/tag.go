@@ -7,7 +7,7 @@ import (
 type Tag struct {
 	tag      string
 	content  string
-	attrs    []*Attr
+	attrs    Attr
 	isEnd    bool
 	eq       int
 	next     *Tag
@@ -19,7 +19,7 @@ type Tag struct {
 func (t *Tag) Print() {
 	for _, tag := range t.children {
 		fmt.Printf("{tag:%s, content:%s,", tag.tag, tag.content)
-		fmt.Printf("attr:%s,", makeAttr(tag.attrs))
+		fmt.Printf("attr:%s,", tag.attrs.makeAttr())
 		if len(tag.children) > 0 {
 			fmt.Printf("children:")
 			tag.Print()
@@ -31,16 +31,16 @@ func (t *Tag) Print() {
 
 func (tag *Tag) makeHtml(content string) string {
 	if tag.tag == "script" {
-		return "<script" + makeAttr(tag.attrs) + ">" + tag.content + "</script>"
+		return "<script" + tag.attrs.makeAttr() + ">" + tag.content + "</script>"
 	} else if tag.tag == "comment" {
 		return ""
 	}
 
 	if isEndTag(tag) {
-		return "<" + tag.tag + "" + makeAttr(tag.attrs) + " />"
+		return "<" + tag.tag + "" + tag.attrs.makeAttr() + " />"
 	}
 
-	return "<" + tag.tag + makeAttr(tag.attrs) + ">" + (content) + "</" + tag.tag + ">"
+	return "<" + tag.tag + tag.attrs.makeAttr() + ">" + (content) + "</" + tag.tag + ">"
 }
 
 func (tag *Tag) concatHtmls() string {
@@ -66,11 +66,11 @@ func (tag *Tag) Html() string {
 }
 
 func (tag *Tag) Attr(key string) string {
-	attr := getAttr(tag.attrs, key)
-	if attr != nil {
-		return attr.value
-	}
-	return ""
+	return tag.attrs.valueOf(key)
+}
+
+func (tag *Tag) SetAttr(key string, value string) {
+	tag.attrs.setValue(key, value)
 }
 
 func (tag *Tag) GetElementById(id string) *Tag {
@@ -100,9 +100,8 @@ func (mtag *Tag) findAttr(attrs map[string]string, tags []*Tag) []*Tag {
 		f := true
 		for attr, value := range attrs {
 			if attr == "class" {
-				classAttr := getAttr(tag.attrs, "class")
 
-				if !classAttr.inClass(value) {
+				if !tag.attrs.inClass(value) {
 					f = false
 				}
 			} else {
@@ -111,10 +110,13 @@ func (mtag *Tag) findAttr(attrs map[string]string, tags []*Tag) []*Tag {
 				if attr == "tag" {
 					g = tag.tag
 				} else {
-					a := getAttr(tag.attrs, attr)
-					if a != nil {
-						g = a.value
+
+					a := tag.attrs.valueOf(attr)
+
+					if a != "" {
+						g = a
 					}
+
 				}
 
 				if g != value {

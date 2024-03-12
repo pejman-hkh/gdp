@@ -5,23 +5,20 @@ import (
 )
 
 type Attr struct {
-	name  string
-	value string
+	attrs *map[string]*string
 }
 
-func makeAttr(attrs []*Attr) string {
+func (a *Attr) makeAttr() string {
 	ret := ""
 	pre := ""
 
-	for _, attr := range attrs {
-		value := attr.value
-		name := attr.name
+	for name, value := range *a.attrs {
 
-		if name == "class" && value == "" {
+		if name == "class" && *value == "" {
 			continue
 		}
 
-		ret += pre + name + `="` + value + `"`
+		ret += pre + name + `="` + *value + `"`
 		pre = " "
 
 	}
@@ -31,25 +28,29 @@ func makeAttr(attrs []*Attr) string {
 	return ret
 }
 
-func getAttr(attrs []*Attr, index string) *Attr {
-	var ret *Attr
-	for _, attr := range attrs {
+func (a *Attr) setValue(key string, value string) {
+	if a.attrs != nil {
+		(*a.attrs)[key] = &value
+	}
+}
 
-		if attr.name == index {
-			ret = attr
-			break
+func (a *Attr) valueOf(key string) string {
+	if a.attrs != nil {
+		v := (*a.attrs)[key]
+		if v != nil {
+			return *v
 		}
 	}
-
-	return ret
+	return ""
 }
 
 func (a *Attr) inClass(v string) bool {
-	if a == nil {
+
+	if a.attrs == nil {
 		return false
 	}
 
-	split := strings.Split(a.value, " ")
+	split := strings.Split(a.valueOf("class"), " ")
 	for _, s := range split {
 		if s == v {
 			return true
