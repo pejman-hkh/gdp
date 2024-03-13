@@ -65,6 +65,25 @@ func (tag *Tag) concatHtmls() string {
 	return html
 }
 
+func (tag *Tag) concatTexts() string {
+	html := ""
+	children := tag.children
+	for _, child := range children {
+		if child.tag == "empty" {
+			html += child.content
+		}
+
+		if len(child.children) > 0 {
+			html += child.concatTexts()
+		}
+	}
+	return html
+}
+
+func (tag *Tag) Text() string {
+	return tag.concatTexts()
+}
+
 func (tag *Tag) Html() string {
 	return tag.concatHtmls()
 }
