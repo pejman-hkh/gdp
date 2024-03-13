@@ -126,7 +126,7 @@ func (tag *Tag) SetHtml(html string) {
 	}
 }
 
-func (mtag *Tag) findAttr(attrs map[string]string, tags []*Tag) []*Tag {
+func (mtag *Tag) findAttr(attrs map[string]string, tags []*Tag, sp string, level int) []*Tag {
 
 	var ret []*Tag
 	for _, tag := range tags {
@@ -169,9 +169,17 @@ func (mtag *Tag) findAttr(attrs map[string]string, tags []*Tag) []*Tag {
 		if f {
 			ret = append(ret, tag)
 		}
+		findChild := false
+		if sp == ">" {
+			if level < 1 {
+				findChild = true
+			}
+		} else if len(tag.children) > 0 {
+			findChild = true
+		}
 
-		if len(tag.children) > 0 {
-			found := tag.findAttr(attrs, tag.children)
+		if findChild {
+			found := tag.findAttr(attrs, tag.children, sp, level+1)
 			ret = append(ret, found...)
 		}
 	}
@@ -192,15 +200,16 @@ func (tag *Tag) Find(mainQuery string) *NodeList {
 
 		found := tag.children
 		query := splitQuery(split)
-
+		sp := ""
 		for _, q := range query {
-			if q == " " {
+			if q == " " || q == ">" || q == "|" || q == "~" || q == "+" {
+				sp = q
 				continue
 			}
 
 			qa := queryAttr{q, 0, len(q)}
 			attrs := qa.parseAttr()
-			found = tag.findAttr(attrs, found)
+			found = tag.findAttr(attrs, found, sp, 0)
 			if _, ok := attrs["first"]; ok {
 				if len(found) > 0 {
 					tmp := []*Tag{}
