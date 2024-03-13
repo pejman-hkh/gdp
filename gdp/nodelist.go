@@ -18,3 +18,11 @@ func (n *NodeList) Each(callback func(int, *Tag)) {
 		callback(index, tag)
 	}
 }
+
+func (n *NodeList) Html() string {
+	ret := ""
+	n.Each(func(i int, t *Tag) {
+		ret += t.OuterHtml()
+	})
+	return ret
+}
