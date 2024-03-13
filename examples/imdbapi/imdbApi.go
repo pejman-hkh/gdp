@@ -22,6 +22,13 @@ func inArray(key string, array []string) bool {
 }
 
 func imdbApi(content string) map[string]interface{} {
+	defer func() {
+		r := recover()
+
+		if r != nil {
+			fmt.Println("RECOVER", r)
+		}
+	}()
 
 	document := gdp.Default(content)
 	epic := document.Find(".ipc-image").Eq(0)
