@@ -3,7 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
+	"strings"
 
 	"github.com/pejman-hkh/gdp/gdp"
 )
@@ -82,9 +85,53 @@ func imdbApi(content string) map[string]interface{} {
 	return eret
 }
 
+func routes(w http.ResponseWriter, req *http.Request) {
+	path := req.URL.Path
+	route := strings.Split(path, "/")
+
+	if route[1] == "api" {
+		url := "https://www.imdb.com/title/" + route[3] + "/"
+
+		w.Header().Set("Content-Type", "application/json")
+		os.Setenv("HTTPS_PROXY", "socks5://127.0.0.1:1088")
+		os.Setenv("HTTP_PROXY", "socks5://127.0.0.1:1088")
+
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			// handle err
+		}
+		req.Header.Set("Authority", "www.imdb.com")
+		req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7")
+		req.Header.Set("Accept-Language", "en-US,en;q=0.9,fa;q=0.8")
+		req.Header.Set("Cache-Control", "max-age=0")
+		req.Header.Set("Sec-Ch-Ua", "\"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Google Chrome\";v=\"120\"")
+		req.Header.Set("Sec-Ch-Ua-Mobile", "?0")
+		req.Header.Set("Sec-Ch-Ua-Platform", "\"Linux\"")
+		req.Header.Set("Sec-Fetch-Dest", "document")
+		req.Header.Set("Sec-Fetch-Mode", "navigate")
+		req.Header.Set("Sec-Fetch-Site", "same-origin")
+		req.Header.Set("Sec-Fetch-User", "?1")
+		req.Header.Set("Upgrade-Insecure-Requests", "1")
+		req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+
+		res, err := http.DefaultClient.Do(req)
+		if err != nil {
+			// handle err
+		}
+		if res != nil {
+			defer res.Body.Close()
+			b, _ := io.ReadAll(res.Body)
+
+			api := imdbApi(string(b))
+			marshal, _ := json.Marshal(api)
+			fmt.Fprint(w, string(marshal[:]))
+		}
+	}
+}
+
 func main() {
-	fileContent, _ := os.ReadFile("fightclub.html")
-	api := imdbApi(string(fileContent))
-	marshal, _ := json.Marshal(api)
-	fmt.Print(string(marshal[:]))
+	//Just open the URL: http://localhost:8090/api/title/tt0137523 in your browser to see the API. Also, you can cache this result in the database
+	//Unfortunately, I am in Iran, and I set a proxy in the client request here. You can remove it for your testing.
+	http.HandleFunc("/", routes)
+	http.ListenAndServe(":8090", nil)
 }
