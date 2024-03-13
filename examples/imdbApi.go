@@ -88,10 +88,20 @@ func imdbApi(content string) map[string]interface{} {
 func routes(w http.ResponseWriter, req *http.Request) {
 	path := req.URL.Path
 	route := strings.Split(path, "/")
-
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	sampleHtml := `Please provide imdbcode : /api/title/[imdbCode] <br /> Sample : <a href="/api/title/tt0137523/">Sample</a>`
 	if route[1] == "api" {
-		url := "https://www.imdb.com/title/" + route[3] + "/"
+		if len(route) < 4 {
+			fmt.Fprint(w, sampleHtml)
+			return
+		}
 
+		if route[3] == "" {
+			fmt.Fprint(w, sampleHtml)
+			return
+		}
+
+		url := "https://www.imdb.com/title/" + route[3] + "/"
 		w.Header().Set("Content-Type", "application/json")
 		os.Setenv("HTTPS_PROXY", "socks5://127.0.0.1:1088")
 		os.Setenv("HTTP_PROXY", "socks5://127.0.0.1:1088")
@@ -126,6 +136,10 @@ func routes(w http.ResponseWriter, req *http.Request) {
 			marshal, _ := json.Marshal(api)
 			fmt.Fprint(w, string(marshal[:]))
 		}
+	} else {
+
+		fmt.Fprint(w, sampleHtml)
+
 	}
 }
 
