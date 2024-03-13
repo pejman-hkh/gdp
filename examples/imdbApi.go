@@ -35,7 +35,7 @@ func imdbApi(content string) map[string]interface{} {
 	rated := selm.Next().Next().Html()
 
 	telm := document.Find("h1[data-testid=hero__pageTitle]").Eq(0)
-	mainTitle := telm.Html()
+	mainTitle := telm.Text()
 	info := []string{}
 	telm.Next().Find("li").Each(func(i int, tag *gdp.Tag) {
 		info = append(info, tag.Html())
