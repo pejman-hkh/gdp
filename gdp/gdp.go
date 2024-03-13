@@ -13,7 +13,7 @@ func Default(html string) Tag {
 
 	var document Tag
 	document.tag = "document"
-	document.children = p.Parse(&document)
+	document.children = p.parse(&document)
 	document.attrs = Attr{nil}
 	p.current = &document
 
@@ -298,7 +298,7 @@ func (p *Parser) getTag(tag *Tag) bool {
 	if tag.tag == "script" {
 		tag.content = p.parseScript()
 	} else {
-		tag.children = p.Parse(tag)
+		tag.children = p.parse(tag)
 	}
 
 	if tag.tag == p.current.tag {
@@ -316,7 +316,7 @@ func (p *Parser) getTag(tag *Tag) bool {
 	return true
 }
 
-func (p *Parser) Parse(parent *Tag) []*Tag {
+func (p *Parser) parse(parent *Tag) []*Tag {
 	var tags []*Tag
 	eq := 0
 	stag := &Tag{}
