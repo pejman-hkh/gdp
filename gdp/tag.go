@@ -69,6 +69,11 @@ func (tag *Tag) Html() string {
 	return tag.concatHtmls()
 }
 
+func (tag *Tag) OuterHtml() string {
+	content := tag.concatHtmls()
+	return tag.makeHtml(content)
+}
+
 func (tag *Tag) Attr(key string) string {
 	return tag.attrs.valueOf(key)
 }
