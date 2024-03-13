@@ -38,7 +38,7 @@ func imdbApi(content string) map[string]interface{} {
 	mainTitle := telm.Text()
 	info := []string{}
 	telm.Next().Find("li").Each(func(i int, tag *gdp.Tag) {
-		info = append(info, tag.Html())
+		info = append(info, tag.Text())
 	})
 
 	plot := document.Find("p[data-testid=plot] span").Eq(0).Html()
