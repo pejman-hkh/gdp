@@ -45,4 +45,8 @@ func main() {
 	tag.Find("span").Eq(0).RemoveClass("test")
 	fmt.Print(tag.Html())
 	fmt.Print(tag.OuterHtml())
+
+	document = gdp.Default(`<div><span>level1<span>level2</span></span></div>`)
+	fmt.Print(document.Find("div > span").Eq(0).Html())
+
 }
