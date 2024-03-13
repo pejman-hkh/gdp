@@ -129,4 +129,26 @@ func TestAttr(t *testing.T) {
 		t.Errorf("got %q, wanted %q", got, want)
 	}
 
+	q = "div[data-testid='test']"
+	qa = queryAttr{q, 0, len(q)}
+	attrs = qa.parseAttr()
+
+	got = attrs["data-testid"]
+	want = "test"
+
+	if got != want {
+		t.Errorf("got %q, wanted %q", got, want)
+	}
+
+	q = "div[data-testid]"
+	qa = queryAttr{q, 0, len(q)}
+	attrs = qa.parseAttr()
+
+	got = attrs["data-testid"]
+	want = ""
+
+	if got != want {
+		t.Errorf("got %q, wanted %q", got, want)
+	}
+
 }

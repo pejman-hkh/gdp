@@ -84,8 +84,7 @@ func (q *queryAttr) getAttr() string {
 		c := q.query[q.i]
 		q.i++
 		if c == '\'' || c == '"' {
-			q.i++
-			break
+			continue
 		}
 
 		if c == '#' || c == '.' || c == '[' || c == '=' || c == ']' || c == ':' || c == '(' {
@@ -135,10 +134,8 @@ func (q *queryAttr) parseAttr() map[string]string {
 			ret[key] = q.getParenthesis()
 		} else if c == '[' {
 
-			key := q.getAttr()
-			q.i++
+			ret[q.getAttr()] = q.getAttr()
 
-			ret[key] = q.getAttr()
 		} else {
 
 			q.i--
