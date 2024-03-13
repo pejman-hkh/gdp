@@ -26,3 +26,7 @@ func (n *NodeList) Html() string {
 	})
 	return ret
 }
+
+func (n *NodeList) Length() int {
+	return len(n.list)
+}
