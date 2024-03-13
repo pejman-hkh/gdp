@@ -91,7 +91,7 @@ func imdbApi(content string) map[string]interface{} {
 		info = append(info, tag.Text())
 	})
 
-	plot := document.Find("p[data-testid=plot] span").Eq(0).Html()
+	plot := document.Find("p[data-testid=plot] span").Eq(0).Text()
 
 	arr := []string{"Director", "Writers", "Stars", "Directors", "Writer", "Star"}
 
