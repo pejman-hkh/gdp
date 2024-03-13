@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/pejman-hkh/gdp/gdp"
@@ -103,12 +102,13 @@ func routes(w http.ResponseWriter, req *http.Request) {
 
 		url := "https://www.imdb.com/title/" + route[3] + "/"
 		w.Header().Set("Content-Type", "application/json")
-		os.Setenv("HTTPS_PROXY", "socks5://127.0.0.1:1088")
-		os.Setenv("HTTP_PROXY", "socks5://127.0.0.1:1088")
+		//os.Setenv("HTTPS_PROXY", "socks5://127.0.0.1:1088")
+		//os.Setenv("HTTP_PROXY", "socks5://127.0.0.1:1088")
 
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
-			// handle err
+			fmt.Fprintf(w, "Error %s !", err.Error())
+			return
 		}
 		req.Header.Set("Authority", "www.imdb.com")
 		req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7")
@@ -126,7 +126,8 @@ func routes(w http.ResponseWriter, req *http.Request) {
 
 		res, err := http.DefaultClient.Do(req)
 		if err != nil {
-			// handle err
+			fmt.Fprintf(w, "Error %s !", err.Error())
+			return
 		}
 		if res != nil {
 			defer res.Body.Close()
