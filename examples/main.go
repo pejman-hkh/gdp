@@ -44,4 +44,5 @@ func main() {
 	fmt.Print(tag.Html())
 	tag.Find("span").Eq(0).RemoveClass("test")
 	fmt.Print(tag.Html())
+	fmt.Print(tag.OuterHtml())
 }
