@@ -9,5 +9,5 @@ test := <Header title="test">test
 Should convert to :
 
 ```
-test := gox("Header", map[string]string{"title":"test"}, "test", e("Link", map[string]string{"to":"https://www.google.com/"}) )
+test := gox("Header", map[string]string{"title":"test"}, "test", gox("Link", map[string]string{"to":"https://www.google.com/"}) )
 ```
