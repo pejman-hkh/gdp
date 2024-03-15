@@ -30,7 +30,7 @@ func (t *Tag) Print() {
 	}
 }
 
-func (tag *Tag) makeHtml(content string) string {
+func (tag *Tag) MakeHtml(content string) string {
 	if tag.tag == "script" {
 		return "<script" + tag.attrs.makeAttr() + ">" + tag.content + "</script>"
 	} else if tag.tag == "comment" {
@@ -58,7 +58,7 @@ func (tag *Tag) concatHtmls() string {
 			if len(child.children) > 0 {
 				content = child.concatHtmls()
 			}
-			html += child.makeHtml(content)
+			html += child.MakeHtml(content)
 		}
 
 	}
@@ -90,11 +90,15 @@ func (tag *Tag) Html() string {
 
 func (tag *Tag) OuterHtml() string {
 	content := tag.concatHtmls()
-	return tag.makeHtml(content)
+	return tag.MakeHtml(content)
 }
 
 func (tag *Tag) Attr(key string) string {
 	return tag.attrs.valueOf(key)
+}
+
+func (tag *Tag) Attrs() map[string]*string {
+	return tag.attrs.attrs
 }
 
 func (tag *Tag) SetAttr(key string, value string) {
@@ -127,6 +131,14 @@ func (tag *Tag) Prev() *Tag {
 
 func (tag *Tag) Next() *Tag {
 	return tag.next
+}
+
+func (tag *Tag) TagName() string {
+	return tag.tag
+}
+
+func (tag *Tag) Content() string {
+	return tag.content
 }
 
 func (tag *Tag) Children() *NodeList {
