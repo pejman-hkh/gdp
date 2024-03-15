@@ -5,7 +5,7 @@ import (
 )
 
 type Attr struct {
-	attrs *map[string]*string
+	attrs map[string]*string
 }
 
 func (a *Attr) makeAttr() string {
@@ -15,7 +15,7 @@ func (a *Attr) makeAttr() string {
 		return ""
 	}
 
-	for name, value := range *a.attrs {
+	for name, value := range a.attrs {
 
 		if name == "class" && *value == "" {
 			continue
@@ -33,13 +33,13 @@ func (a *Attr) makeAttr() string {
 
 func (a *Attr) setValue(key string, value string) {
 	if a.attrs != nil {
-		(*a.attrs)[key] = &value
+		(a.attrs)[key] = &value
 	}
 }
 
 func (a *Attr) valueOf(key string) string {
 	if a.attrs != nil {
-		v := (*a.attrs)[key]
+		v := (a.attrs)[key]
 		if v != nil {
 			return *v
 		}
