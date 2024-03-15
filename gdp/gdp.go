@@ -127,7 +127,7 @@ func (p *Parser) parseAttr() Attr {
 		}
 	}
 
-	return Attr{&attrs}
+	return Attr{attrs}
 }
 
 func (p *Parser) parseTag(tag *Tag) bool {
@@ -143,7 +143,7 @@ func (p *Parser) parseTag(tag *Tag) bool {
 
 	var buffer bytes.Buffer
 	mapAttr := make(map[string]*string)
-	attrs := Attr{&mapAttr}
+	attrs := Attr{mapAttr}
 	for p.i < p.len {
 
 		c1 := p.html[p.i]
