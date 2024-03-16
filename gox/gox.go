@@ -3,6 +3,7 @@ package gox
 import (
 	"fmt"
 	"reflect"
+	"regexp"
 
 	"github.com/pejman-hkh/gdp/gdp"
 )
@@ -67,7 +68,24 @@ func ToGo(tag *gdp.Tag) string {
 			if t.Parent().TagName() == "document" {
 				ret += t.Content()
 			} else {
-				ret += pre + "`" + t.Content() + "`"
+				content := t.Content()
+
+				r := regexp.MustCompile(`(.*?){([^{}]*)}`)
+				matches := r.FindAllStringSubmatch(content, -1)
+				if len(matches) > 0 {
+					ra := ""
+					for _, v := range matches {
+						ra += "`" + v[1] + "`"
+						if v[2] != "" {
+							ra += "," + v[2]
+						}
+					}
+					if ra != "" {
+						ret += pre + ra
+					}
+				} else {
+					ret += pre + "`" + content + "`"
+				}
 			}
 		} else {
 			childs := `[]string{`
