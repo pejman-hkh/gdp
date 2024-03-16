@@ -10,7 +10,7 @@ import (
 type React struct {}
 
 func (r React) Link(props map[string]string, childrens string) string {
-	return react.Run("a", map[string]string{`href` :`{{props["to"]}}`}, []string{``,childrens})
+	return react.Run("a", map[string]string{`href` :props["to"]}, []string{``,childrens})
 }
 
 func (r React) SideNav(props map[string]string, childrens string) string {
@@ -64,17 +64,17 @@ func routes(w http.ResponseWriter, req *http.Request) {
 	route := strings.Split(path, "/")
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-	if route[1] == "home" {
-		fmt.Fprint(w, react.Run("Layout", map[string]string{}, []string{`
-		Home Page
-		`}))
-	} else if route[1] == "about" {
+	if route[1] == "about" {
 		fmt.Fprint(w, react.Run("Layout", map[string]string{}, []string{`
 		About
 		`}))
 	} else if route[1] == "contact" {
 		fmt.Fprint(w, react.Run("Layout", map[string]string{}, []string{`
 		Contact
+		`}))
+	} else {
+		fmt.Fprint(w, react.Run("Layout", map[string]string{}, []string{`
+		Home Page
 		`}))
 	}
 }

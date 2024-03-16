@@ -53,7 +53,14 @@ func convertToGoxFunc(tag *gdp.Tag, child string) string {
 	attrs := ""
 	pre := ""
 	for key, value := range tag.Attrs() {
-		attrs += fmt.Sprintf("%s`%s` :`%s`", pre, key, *value)
+		r := regexp.MustCompile(`{{([^{}]*)}}`)
+		matches := r.FindAllStringSubmatch(*value, -1)
+
+		if len(matches) > 0 && len(matches[0]) > 1 {
+			attrs += fmt.Sprintf("%s`%s` :%s", pre, key, matches[0][1])
+		} else {
+			attrs += fmt.Sprintf("%s`%s` :`%s`", pre, key, *value)
+		}
 		pre = ","
 	}
 
@@ -70,7 +77,7 @@ func ToGo(tag *gdp.Tag) string {
 			} else {
 				content := t.Content()
 
-				r := regexp.MustCompile(`(.*?){([^{}]*)}`)
+				r := regexp.MustCompile(`(.*?){([^{}]*)}(.*?)`)
 				matches := r.FindAllStringSubmatch(content, -1)
 				if len(matches) > 0 {
 					ra := ""
@@ -78,6 +85,9 @@ func ToGo(tag *gdp.Tag) string {
 						ra += "`" + v[1] + "`"
 						if v[2] != "" {
 							ra += "," + v[2]
+						}
+						if v[3] != "" {
+							ra += "," + v[3]
 						}
 					}
 					if ra != "" {

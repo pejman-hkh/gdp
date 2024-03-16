@@ -70,17 +70,17 @@ func routes(w http.ResponseWriter, req *http.Request) {
 	route := strings.Split(path, "/")
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-	if route[1] == "home" {
-		fmt.Fprint(w, <Layout>
-		Home Page
-		</Layout>)
-	} else if route[1] == "about" {
+	if route[1] == "about" {
 		fmt.Fprint(w, <Layout>
 		About
 		</Layout>)
 	} else if route[1] == "contact" {
 		fmt.Fprint(w, <Layout>
 		Contact
+		</Layout>)
+	} else {
+		fmt.Fprint(w, <Layout>
+		Home Page
 		</Layout>)
 	}
 }
