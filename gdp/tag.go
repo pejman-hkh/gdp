@@ -26,7 +26,7 @@ func (t *Tag) Print() {
 			tag.Print()
 			fmt.Printf(",")
 		}
-		fmt.Printf("}\n")
+		fmt.Printf("}")
 	}
 }
 
