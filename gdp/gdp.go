@@ -12,9 +12,9 @@ func Default(html string) Tag {
 	p.len = len(p.html)
 
 	var document Tag
-	document.tag = "document"
-	document.children = p.parse(&document)
-	document.attrs = Attr{nil}
+	document.Tag = "document"
+	document.Childrens = p.parse(&document)
+	document.TagAttrs = Attr{nil}
 	p.current = &document
 
 	return document
@@ -133,7 +133,7 @@ func (p *Parser) parseAttr() Attr {
 func (p *Parser) parseTag(tag *Tag) bool {
 	if p.isEqual("![CDATA[") {
 		p.i += 8
-		tag.tag = "cdata"
+		tag.Tag = "cdata"
 		return true
 	}
 
@@ -162,18 +162,18 @@ func (p *Parser) parseTag(tag *Tag) bool {
 	}
 	name := buffer.String()
 
-	tag.tag = name
-	tag.attrs = attrs
+	tag.Tag = name
+	tag.TagAttrs = attrs
 	tag.isEnd = false
 
 	if name[0] == '/' {
 		tag.isEnd = true
-		tag.tag = name[1:]
+		tag.Tag = name[1:]
 	}
 
 	if name[len(name)-1] == '/' {
 		name = name[0 : len(name)-1]
-		tag.tag = name
+		tag.Tag = name
 	}
 	return true
 }
@@ -183,8 +183,8 @@ func (p *Parser) parseContent(first byte, tag *Tag) bool {
 	content := p.getUntil("<", first)
 	p.i--
 
-	tag.tag = "empty"
-	tag.content = content
+	tag.Tag = "empty"
+	tag.Contents = content
 
 	return true
 }
@@ -196,8 +196,8 @@ func (p *Parser) parseComment(tag *Tag) bool {
 
 	p.i += 2
 
-	tag.tag = "comment"
-	tag.content = content
+	tag.Tag = "comment"
+	tag.Contents = content
 
 	return true
 }
@@ -226,7 +226,7 @@ func (p *Parser) isEqual(text string) bool {
 
 func isEndTag(tag *Tag) bool {
 	for i := 0; i < 18; i++ {
-		if tag.tag == hasNoEndTags[i] {
+		if tag.Tag == hasNoEndTags[i] {
 			return true
 		}
 	}
@@ -277,11 +277,11 @@ func (p *Parser) getTag(tag *Tag) bool {
 		return false
 	}
 
-	if tag.tag == "cdata" {
-		tag.content = p.parseCdata()
+	if tag.Tag == "cdata" {
+		tag.Contents = p.parseCdata()
 		return true
 	}
-	name := tag.tag
+	name := tag.Tag
 	if len(name) >= 4 && name[0:4] == "?xml" {
 		p.isXml = true
 		return true
@@ -295,20 +295,20 @@ func (p *Parser) getTag(tag *Tag) bool {
 		return true
 	}
 
-	if tag.tag == "script" {
-		tag.content = p.parseScript()
+	if tag.Tag == "script" {
+		tag.Contents = p.parseScript()
 	} else {
-		tag.children = p.parse(tag)
+		tag.Childrens = p.parse(tag)
 	}
 
-	if tag.tag == p.current.tag {
+	if tag.Tag == p.current.Tag {
 		return true
 	}
 
 	var etag Tag
 
 	for p.next(&etag) {
-		if tag.tag == etag.tag {
+		if tag.Tag == etag.Tag {
 			break
 		}
 	}
@@ -329,13 +329,13 @@ func (p *Parser) parse(parent *Tag) []*Tag {
 			break
 		}
 
-		if tag.isEnd && parent.tag == tag.tag {
+		if tag.isEnd && parent.Tag == tag.Tag {
 			break
 		}
 
 		if !tag.isEnd {
 
-			tag.eq = eq
+			tag.Eq = eq
 			eq++
 			tag.prev = stag
 			tag.parent = parent

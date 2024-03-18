@@ -5,17 +5,17 @@ import (
 )
 
 type Attr struct {
-	attrs map[string]*string
+	Attrs map[string]*string
 }
 
 func (a *Attr) makeAttr() string {
 	ret := ""
 	pre := ""
-	if a.attrs == nil {
+	if a.Attrs == nil {
 		return ""
 	}
 
-	for name, value := range a.attrs {
+	for name, value := range a.Attrs {
 
 		if name == "class" && *value == "" {
 			continue
@@ -32,14 +32,14 @@ func (a *Attr) makeAttr() string {
 }
 
 func (a *Attr) setValue(key string, value string) {
-	if a.attrs != nil {
-		(a.attrs)[key] = &value
+	if a.Attrs != nil {
+		(a.Attrs)[key] = &value
 	}
 }
 
 func (a *Attr) valueOf(key string) string {
-	if a.attrs != nil {
-		v := (a.attrs)[key]
+	if a.Attrs != nil {
+		v := (a.Attrs)[key]
 		if v != nil {
 			return *v
 		}
@@ -48,7 +48,7 @@ func (a *Attr) valueOf(key string) string {
 }
 
 func (a *Attr) RemoveClass(class string) {
-	if a.attrs == nil {
+	if a.Attrs == nil {
 		return
 	}
 
@@ -65,7 +65,7 @@ func (a *Attr) RemoveClass(class string) {
 }
 
 func (a *Attr) AddClass(class string) {
-	if a.attrs == nil {
+	if a.Attrs == nil {
 		return
 	}
 
@@ -80,7 +80,7 @@ func (a *Attr) AddClass(class string) {
 
 func (a *Attr) HasClass(v string) bool {
 
-	if a.attrs == nil {
+	if a.Attrs == nil {
 		return false
 	}
 

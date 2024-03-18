@@ -16,7 +16,7 @@ func main() {
 
 	document = gdp.Default(`<div class="parent"><div class="prev">test</div><div class="middle" id="middle">test1</div><span class="next"></span></div>`)
 
-	fmt.Printf("%+v\n", document)
+	document.Print()
 
 	document.Find(".prev,.middle,.next").Each(func(index int, tag *gdp.Tag) {
 		fmt.Printf("%+v\n", tag)

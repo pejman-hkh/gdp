@@ -1,61 +1,54 @@
 package gdp
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 )
 
 type Tag struct {
-	tag      string
-	content  string
-	attrs    Attr
-	isEnd    bool
-	eq       int
-	next     *Tag
-	prev     *Tag
-	parent   *Tag
-	children []*Tag
+	Tag       string
+	Contents  string
+	TagAttrs  Attr
+	isEnd     bool
+	Eq        int
+	next      *Tag
+	prev      *Tag
+	parent    *Tag
+	Childrens []*Tag
 }
 
 func (t *Tag) Print() {
-	for _, tag := range t.children {
-		fmt.Printf("{tag:%s, content:%s,", tag.tag, tag.content)
-		fmt.Printf("attr:%s,", tag.attrs.makeAttr())
-		if len(tag.children) > 0 {
-			fmt.Printf("children:")
-			tag.Print()
-			fmt.Printf(",")
-		}
-		fmt.Printf("}")
-	}
+	b1, _ := json.Marshal(t.Childrens)
+	fmt.Println(string(b1))
 }
 
 func (tag *Tag) MakeHtml(content string) string {
-	if tag.tag == "script" {
-		return "<script" + tag.attrs.makeAttr() + ">" + tag.content + "</script>"
-	} else if tag.tag == "comment" {
+	if tag.Tag == "script" {
+		return "<script" + tag.TagAttrs.makeAttr() + ">" + tag.Contents + "</script>"
+	} else if tag.Tag == "comment" {
 		return ""
 	}
 
 	if isEndTag(tag) {
-		return "<" + tag.tag + "" + tag.attrs.makeAttr() + " />"
+		return "<" + tag.Tag + "" + tag.TagAttrs.makeAttr() + " />"
 	}
 
-	return "<" + tag.tag + tag.attrs.makeAttr() + ">" + (content) + "</" + tag.tag + ">"
+	return "<" + tag.Tag + tag.TagAttrs.makeAttr() + ">" + (content) + "</" + tag.Tag + ">"
 }
 
 func (tag *Tag) concatHtmls() string {
-	children := tag.children
+	children := tag.Childrens
 	html := ""
 	for _, child := range children {
 		if child == nil {
 			continue
 		}
-		if child.tag == "empty" || child.tag == "cdata" {
-			html += child.content
+		if child.Tag == "empty" || child.Tag == "cdata" {
+			html += child.Contents
 		} else {
 			content := ""
-			if len(child.children) > 0 {
+			if len(child.Childrens) > 0 {
 				content = child.concatHtmls()
 			}
 			html += child.MakeHtml(content)
@@ -67,13 +60,13 @@ func (tag *Tag) concatHtmls() string {
 
 func (tag *Tag) concatTexts() string {
 	html := ""
-	children := tag.children
+	children := tag.Childrens
 	for _, child := range children {
-		if child.tag == "empty" {
-			html += child.content
+		if child.Tag == "empty" {
+			html += child.Contents
 		}
 
-		if len(child.children) > 0 {
+		if len(child.Childrens) > 0 {
 			html += child.concatTexts()
 		}
 	}
@@ -94,27 +87,27 @@ func (tag *Tag) OuterHtml() string {
 }
 
 func (tag *Tag) Attr(key string) string {
-	return tag.attrs.valueOf(key)
+	return tag.TagAttrs.valueOf(key)
 }
 
 func (tag *Tag) Attrs() map[string]*string {
-	return tag.attrs.attrs
+	return tag.TagAttrs.Attrs
 }
 
 func (tag *Tag) SetAttr(key string, value string) {
-	tag.attrs.setValue(key, value)
+	tag.TagAttrs.setValue(key, value)
 }
 
 func (tag *Tag) RemoveClass(class string) {
-	tag.attrs.RemoveClass(class)
+	tag.TagAttrs.RemoveClass(class)
 }
 
 func (tag *Tag) AddClass(class string) {
-	tag.attrs.AddClass(class)
+	tag.TagAttrs.AddClass(class)
 }
 
 func (tag *Tag) HasClass(class string) bool {
-	return tag.attrs.HasClass(class)
+	return tag.TagAttrs.HasClass(class)
 }
 
 func (tag *Tag) GetElementById(id string) *Tag {
@@ -134,25 +127,25 @@ func (tag *Tag) Next() *Tag {
 }
 
 func (tag *Tag) TagName() string {
-	return tag.tag
+	return tag.Tag
 }
 
 func (tag *Tag) Content() string {
-	return tag.content
+	return tag.Contents
 }
 
 func (tag *Tag) Children() *NodeList {
-	return &NodeList{tag.children}
+	return &NodeList{tag.Childrens}
 }
 
 func (tag *Tag) Remove() {
-	tag.parent.children[tag.eq] = nil
+	tag.parent.Childrens[tag.Eq] = nil
 }
 
 func (tag *Tag) SetHtml(html string) {
 	document := Default(html)
-	tag.children = document.children
-	for _, child := range document.children {
+	tag.Childrens = document.Childrens
+	for _, child := range document.Childrens {
 		child.parent = tag
 	}
 }
@@ -172,17 +165,17 @@ func (mtag *Tag) findAttr(attrs map[string]string, tags []*Tag, sp string, level
 
 			if attr == "class" {
 
-				if !tag.attrs.HasClass(value) {
+				if !tag.TagAttrs.HasClass(value) {
 					f = false
 				}
 			} else {
 				g := ""
 
 				if attr == "tag" {
-					g = tag.tag
+					g = tag.Tag
 				} else {
 
-					a := tag.attrs.valueOf(attr)
+					a := tag.TagAttrs.valueOf(attr)
 
 					if a != "" {
 						g = a
@@ -205,12 +198,12 @@ func (mtag *Tag) findAttr(attrs map[string]string, tags []*Tag, sp string, level
 			if level < 1 {
 				findChild = true
 			}
-		} else if len(tag.children) > 0 {
+		} else if len(tag.Childrens) > 0 {
 			findChild = true
 		}
 
 		if findChild {
-			found := tag.findAttr(attrs, tag.children, sp, level+1)
+			found := tag.findAttr(attrs, tag.Childrens, sp, level+1)
 			ret = append(ret, found...)
 		}
 	}
@@ -219,7 +212,7 @@ func (mtag *Tag) findAttr(attrs map[string]string, tags []*Tag, sp string, level
 }
 
 func (tag *Tag) Find(mainQuery string) *NodeList {
-	tags := tag.children
+	tags := tag.Childrens
 	if mainQuery == "" {
 		return &NodeList{tags}
 	}
@@ -229,7 +222,7 @@ func (tag *Tag) Find(mainQuery string) *NodeList {
 
 	for _, split := range splits {
 
-		found := tag.children
+		found := tag.Childrens
 		query := splitQuery(split)
 		sp := ""
 		for _, q := range query {
