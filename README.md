@@ -1,7 +1,13 @@
 # GDP
 GoLang Dom Parser
 
-GDP is a tiny Golang HTML DOM parser without any dependency with JS-style programming and CSS selectors
+GDP is a tiny Golang HTML DOM parser without any dependency on JS-style programming, and with a CSS selector, that you can parse HTML with Golang.
+
+# Also known as
+Golang HTML parser
+Golang parsing HTML
+Golang HTML DOM parser
+Golang DOM parser
 
 # API
 https://pkg.go.dev/github.com/pejman-hkh/gdp/gdp
