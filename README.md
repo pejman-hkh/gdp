@@ -10,7 +10,7 @@ go get github.com/pejman-hkh/gdp
 ```
 
 ## Usage
- ```
+ ```golang
 package main
 
 import (
