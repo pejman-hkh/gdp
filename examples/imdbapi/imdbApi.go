@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"gdp/gdp"
+	"github.com/pejman-hkh/gdp/gdp"
 )
 
 type Casts map[int]map[string]string
@@ -47,22 +47,22 @@ func imdbApi(content string) map[string]interface{} {
 	casts := make(map[string]Casts)
 	document.Find(".ipc-inline-list").Each(func(ii int, t *gdp.Tag) {
 
-		title := t.Prev().Html()
+		title := t.Parent().Prev().Html()
 
-		if title != "" {
+		t.Parent().Prev().Print()
 
-			if inArray(title, arr) {
-				casts[title] = Casts{}
-				castArray := make(Casts)
-				i := 0
-				t.Find("a").Each(func(iii int, a *gdp.Tag) {
-					cast := map[string]string{"name": a.Html(), "link": a.Attr("href")}
-					castArray[i] = cast
-					i++
-				})
-				casts[title] = castArray
-			}
+		if inArray(title, arr) {
+			casts[title] = Casts{}
+			castArray := make(Casts)
+			i := 0
+			t.Find("a").Each(func(iii int, a *gdp.Tag) {
+				cast := map[string]string{"name": a.Html(), "link": a.Attr("href")}
+				castArray[i] = cast
+				i++
+			})
+			casts[title] = castArray
 		}
+
 	})
 
 	topCast := make(Casts)

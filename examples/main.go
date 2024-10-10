@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"gdp/gdp"
+	"github.com/pejman-hkh/gdp/gdp"
 )
 
 func main() {

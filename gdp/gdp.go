@@ -126,7 +126,7 @@ func (p *Parser) parseAttrs() Attr {
 	return Attr{attrs}
 }
 
-func (p *Parser) getTag() Tag {
+func (p *Parser) getTag(tag *Tag) {
 	var buffer bytes.Buffer
 	mapAttr := make(map[string]*string)
 	attrs := Attr{mapAttr}
@@ -149,10 +149,8 @@ func (p *Parser) getTag() Tag {
 
 	name := buffer.String()
 
-	tag := Tag{}
 	tag.Name = name
 	tag.Attrs = attrs
-	return tag
 }
 
 func inStringArray(str string, array []string) bool {
@@ -164,28 +162,29 @@ func inStringArray(str string, array []string) bool {
 	return false
 }
 
-func (p *Parser) parseTag() Tag {
-	tag := p.getTag()
+func (p *Parser) parseTag(tag *Tag) {
+	p.getTag(tag)
 	if tag.Name == "script" {
-		return p.parseScript()
+		p.parseScript(tag)
+		return
 	}
 
 	if inStringArray(tag.Name, noEndTags[:]) {
-		return tag
+		return
 	}
 
 	var etag Tag
 	var tags []*Tag
 	for p.i < p.len {
-		tags = p.parse(&tag, &etag)
+		tags = p.parse(tag, &etag)
 
 		if tag.Name == etag.Name {
 			tag.Children = tags
-			return tag
+			return
 		}
 	}
 	tag.Children = tags
-	return tag
+	return
 }
 
 func (p *Parser) isEqual(text string) bool {
@@ -216,46 +215,39 @@ func (p *Parser) getUntil(until string) string {
 	return buffer.String()
 }
 
-func (p *Parser) parseComment() Tag {
+func (p *Parser) parseComment(tag *Tag) {
 
 	p.i += 3
 	content := p.getUntil("-->")
 	p.i += 3
 
-	tag := Tag{}
 	tag.Name = "comment"
 	tag.Content = content
-	return tag
 }
 
-func (p *Parser) parseContent() Tag {
+func (p *Parser) parseContent(tag *Tag) {
 
 	content := p.getUntil("<")
 
-	tag := Tag{}
 	tag.Name = "empty"
 	tag.Content = content
-	return tag
 }
 
-func (p *Parser) parseCData() Tag {
+func (p *Parser) parseCData(tag *Tag) {
 	p.i += 8
 	content := p.getUntil("]]>")
 	p.i += 3
 
-	tag := Tag{}
 	tag.Name = "cdata"
 	tag.Content = content
-	return tag
 }
 
-func (p *Parser) parseScript() Tag {
+func (p *Parser) parseScript(tag *Tag) {
 	content := p.getUntil("</script")
 	p.i += 9
-	tag := Tag{}
+
 	tag.Name = "script"
 	tag.Content = content
-	return tag
 }
 
 func (p *Parser) parse(parent *Tag, etag *Tag) []*Tag {
@@ -277,11 +269,11 @@ func (p *Parser) parse(parent *Tag, etag *Tag) []*Tag {
 			if next == '!' {
 				if p.isEqual("![CDATA[") {
 
-					tag = p.parseCData()
+					p.parseCData(&tag)
 				} else if p.isEqual("!--") {
-					tag = p.parseComment()
+					p.parseComment(&tag)
 				} else {
-					tag = p.parseContent()
+					p.parseContent(&tag)
 				}
 			} else if next == '/' {
 
@@ -291,14 +283,14 @@ func (p *Parser) parse(parent *Tag, etag *Tag) []*Tag {
 
 				break
 			} else if !unicode.IsLetter(rune(next)) {
-				tag = p.parseContent()
+				p.parseContent(&tag)
 				tag.Content = "<" + tag.Content
 			} else {
 
-				tag = p.parseTag()
+				p.parseTag(&tag)
 			}
 		} else {
-			tag = p.parseContent()
+			p.parseContent(&tag)
 		}
 
 		tag.Eq = eq
