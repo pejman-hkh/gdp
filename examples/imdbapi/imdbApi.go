@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/pejman-hkh/gdp/gdp"
+	"gdp/gdp"
 )
 
 type Casts map[int]map[string]string
@@ -22,13 +22,6 @@ func inArray(key string, array []string) bool {
 }
 
 func imdbApi(content string) map[string]interface{} {
-	defer func() {
-		r := recover()
-
-		if r != nil {
-			fmt.Println("RECOVER", r)
-		}
-	}()
 
 	document := gdp.Default(content)
 	epic := document.Find(".ipc-image").Eq(0)
@@ -54,17 +47,21 @@ func imdbApi(content string) map[string]interface{} {
 	casts := make(map[string]Casts)
 	document.Find(".ipc-inline-list").Each(func(ii int, t *gdp.Tag) {
 
-		title := t.Parent().Prev().Html()
-		if inArray(title, arr) {
-			casts[title] = Casts{}
-			castArray := make(Casts)
-			i := 0
-			t.Find("a").Each(func(iii int, a *gdp.Tag) {
-				cast := map[string]string{"name": a.Html(), "link": a.Attr("href")}
-				castArray[i] = cast
-				i++
-			})
-			casts[title] = castArray
+		title := t.Prev().Html()
+
+		if title != "" {
+
+			if inArray(title, arr) {
+				casts[title] = Casts{}
+				castArray := make(Casts)
+				i := 0
+				t.Find("a").Each(func(iii int, a *gdp.Tag) {
+					cast := map[string]string{"name": a.Html(), "link": a.Attr("href")}
+					castArray[i] = cast
+					i++
+				})
+				casts[title] = castArray
+			}
 		}
 	})
 
@@ -139,6 +136,8 @@ func routes(w http.ResponseWriter, req *http.Request) {
 		if res != nil {
 			defer res.Body.Close()
 			b, _ := io.ReadAll(res.Body)
+			// fmt.Print(string(b))
+			// os.Exit(0)
 
 			api := imdbApi(string(b))
 			marshal, _ := json.Marshal(api)

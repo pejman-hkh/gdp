@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pejman-hkh/gdp/gdp"
+	"gdp/gdp"
 )
 
 func main() {
 
-	fileContent, _ := os.ReadFile("fightclub.html")
+	fileContent, _ := os.ReadFile("./data/fightclub.html")
 	document := gdp.Default(string(fileContent))
 	found := document.Find(".ipc-image")
 	fmt.Printf("%+v\n", found.Eq(0).Attr("src"))

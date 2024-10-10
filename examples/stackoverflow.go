@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pejman-hkh/gdp/gdp"
+	"gdp/gdp"
 )
 
 func main() {
-	html, _ := os.ReadFile("stackoverflow.html")
+	html, _ := os.ReadFile("./data/stackoverflow.html")
 
 	document := gdp.Default(string(html))
 

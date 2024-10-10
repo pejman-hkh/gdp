@@ -14,6 +14,18 @@ func TestRemove(t *testing.T) {
 	}
 }
 
+func TestSib1(t *testing.T) {
+	document := Default(`<div class="parent"><span>test1 span</span> test <span id="a">test2 span</span> test1</div>`)
+	middle := document.GetElementById("a")
+	a := middle.Prev().Prev()
+
+	got := a.Text()
+	want := "test1 span"
+	if got != want {
+		t.Errorf("got %q, wanted %q", got, want)
+	}
+}
+
 func TestSib(t *testing.T) {
 	document := Default(`<div class="parent"><div class="prev">test</div><div class="middle" id="middle">test1</div><span class="next"></span></div>`)
 
